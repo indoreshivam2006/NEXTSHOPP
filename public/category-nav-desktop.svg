@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#ffffff"/>
+  
+  <!-- Navbar Background -->
+  <rect width="800" height="60" fill="#f8fafc"/>
+  <line x1="0" y1="60" x2="800" y2="60" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Logo Text -->
+  <text x="20" y="37" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#0f172a">LOGO</text>
+  
+  <!-- Navbar Menu Items -->
+  <text x="120" y="37" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Home</text>
+  <text x="190" y="37" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Products</text>
+  
+  <!-- Category Item (Highlighted) -->
+  <rect x="260" y="20" width="110" height="30" rx="4" fill="#f1f5f9"/>
+  <text x="275" y="37" font-family="Arial, sans-serif" font-size="14" fill="#3b82f6" font-weight="500">Categories</text>
+  <path d="M360 32 L365 37 L370 32" stroke="#3b82f6" stroke-width="2" fill="none"/>
+  
+  <!-- More Menu Items -->
+  <text x="390" y="37" font-family="Arial, sans-serif" font-size="14" fill="#64748b">About</text>
+  <text x="450" y="37" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Contact</text>
+  
+  <!-- Right Side Icons -->
+  <circle cx="700" cy="30" r="12" fill="#f1f5f9"/>
+  <path d="M700 25 A1 1 0 0 0 700 35 A1 1 0 0 0 700 25" stroke="#64748b" stroke-width="1.5" fill="none"/>
+  <circle cx="735" cy="30" r="12" fill="#f1f5f9"/>
+  <path d="M730 30 L740 30 M735 25 L735 35" stroke="#64748b" stroke-width="1.5"/>
+  <circle cx="770" cy="30" r="12" fill="#f1f5f9"/>
+  <path d="M765 28 L775 28 L770 33 L765 28" stroke="#64748b" stroke-width="1.5" fill="none"/>
+  
+  <!-- Dropdown Container -->
+  <rect x="260" y="70" width="200" height="240" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="10" flood-opacity="0.15"/>
+  </filter>
+  <rect x="260" y="70" width="200" height="240" rx="8" fill="#ffffff" filter="url(#shadow)"/>
+  
+  <!-- Simple Category List -->
+  <rect x="270" y="85" width="180" height="30" rx="4" fill="#f9fafb" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="105" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Clothing</text>
+  
+  <rect x="270" y="125" width="180" height="30" rx="4" fill="#f9fafb" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="145" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Electronics</text>
+  
+  <rect x="270" y="165" width="180" height="30" rx="4" fill="#f9fafb" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="185" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Footwear</text>
+  
+  <rect x="270" y="205" width="180" height="30" rx="4" fill="#f9fafb" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="225" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Home</text>
+  
+  <rect x="270" y="245" width="180" height="30" rx="4" fill="#f9fafb" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="265" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">Beauty</text>
+  
+  <rect x="270" y="285" width="180" height="30" rx="4" fill="#eff6ff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="305" font-family="Arial, sans-serif" font-size="14" fill="#3b82f6">Basic Needs</text>
+</svg> 
