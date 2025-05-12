@@ -36,13 +36,13 @@ interface FirebaseStorage {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDDp6rsiFkQUuowBKAkJD32_Wt-W8fFfrg",
-  authDomain: "connectmart-976e1.firebaseapp.com",
-  projectId: "connectmart-976e1",
-  storageBucket: "connectmart-976e1.firebasestorage.app",
-  messagingSenderId: "1007621246915",
-  appId: "1:1007621246915:web:c475b0b0784bbbfaf93776",
-  measurementId: "G-530737VE49"
+  apiKey: "AIzaSyBojJmQWSKd2JkP4GuX8_Uzgf9-uPMuxBY",
+  authDomain: "nextshop-38869.firebaseapp.com",
+  projectId: "nextshop-38869",
+  storageBucket: "nextshop-38869.firebasestorage.app",
+  messagingSenderId: "962181322515",
+  appId: "1:962181322515:web:e9cb5190fd0efe5e9e6ce6",
+  measurementId: "G-C08S30GLEK"
 };
 
 // Check if we're in development mode
