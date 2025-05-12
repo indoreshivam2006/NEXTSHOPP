@@ -25,7 +25,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 // Session key for checking login status
-const USER_SESSION_KEY = "connect_mart_auth_session";
+const USER_SESSION_KEY = "Next_mart_auth_session";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
