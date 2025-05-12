@@ -68,35 +68,7 @@ export async function getOrdersByUser(userId) {
         },
         status: "delivered",
         date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "order2",
-        userId,
-        items: [
-          {
-            id: "5",
-            name: "Wireless Headphones",
-            price: 199.99,
-            quantity: 1,
-            image: "/placeholder.svg?height=100&width=100",
-          },
-        ],
-        shipping: {
-          firstName: "",
-          lastName: "",
-          address: "",
-          city: "",
-          state: "",
-          zipCode: "",
-          country: "",
-        },
-        payment: {
-          method: "Gpay",
-          total: ,
-        },
-        status: "processing",
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
+      }
     ]
   } catch (error) {
     console.error("Error getting orders:", error)
