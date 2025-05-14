@@ -36,7 +36,8 @@ export default function RegisterPage() {
     feedback: ""
   })
   
-  const { signUp, signInWithGoogle } = useAuth()
+  // Using optional chaining for safer access to auth methods
+  const { signUp, signInWithGoogle } = useAuth() || {}
   const router = useRouter()
   const { toast } = useToast()
 
@@ -139,6 +140,16 @@ export default function RegisterPage() {
       return
     }
 
+    // Check if auth context is loaded
+    if (!signUp) {
+      toast({
+        title: "Authentication error",
+        description: "Authentication service is not available. Please try again later.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -175,10 +186,20 @@ export default function RegisterPage() {
     // Prevent multiple clicks
     if (googleLoading) return;
     
+    // Check if auth context is loaded
+    if (!signInWithGoogle) {
+      toast({
+        title: "Authentication error",
+        description: "Google authentication service is not available. Please try again later.",
+        variant: "destructive",
+      })
+      return
+    }
+    
     setGoogleLoading(true)
 
     try {
-      // Show "connecting" toast - using a variable instead of trying to dismiss it later
+      // Show "connecting" toast
       toast({
         title: "Connecting to Google",
         description: "Opening Google sign-in window...",
@@ -273,7 +294,7 @@ export default function RegisterPage() {
           </p>
         </div>
         
-        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transition-all animate-in fade-in-50 zoom-in-95 duration-300">
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label 
@@ -300,7 +321,7 @@ export default function RegisterPage() {
                   required 
                 />
                 {formErrors.name && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1 animate-in slide-in-from-left">
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {formErrors.name}
                   </p>
@@ -333,7 +354,7 @@ export default function RegisterPage() {
                   required 
                 />
                 {formErrors.email && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1 animate-in slide-in-from-left">
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {formErrors.email}
                   </p>
@@ -379,7 +400,7 @@ export default function RegisterPage() {
                   )}
                 </button>
                 {formErrors.password && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1 animate-in slide-in-from-left">
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {formErrors.password}
                   </p>
@@ -452,7 +473,7 @@ export default function RegisterPage() {
                   )}
                 </button>
                 {formErrors.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1 animate-in slide-in-from-left">
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {formErrors.confirmPassword}
                   </p>
@@ -483,7 +504,7 @@ export default function RegisterPage() {
               </label>
             </div>
             {formErrors.terms && (
-              <p className="text-xs text-red-500 flex items-center gap-1 -mt-4 animate-in slide-in-from-left">
+              <p className="text-xs text-red-500 flex items-center gap-1 -mt-4">
                 <AlertCircle className="h-3 w-3" />
                 {formErrors.terms}
               </p>
