@@ -44,7 +44,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.slug)
+  // Store params.slug in a local const variable to avoid sync issues
+  const slug = params.slug;
+  const category = await getCategoryBySlug(slug)
 
   if (!category) {
     notFound()
@@ -100,13 +102,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           <div 
             className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-800/80 z-10"
             style={{
-              backgroundImage: params.slug === "clothing" ? "url('/cloth_bg.png')" :
-                params.slug === "footwear" ? "url('/footwear_bg.jpg')" :
-                params.slug === "accessories" ? "url('/Accessories_bg.jpg')" :
-                params.slug === "home" ? "url('/Home_bg.jpg')" :
-                params.slug === "beauty" ? "url('/beauty_bg.jpg')" :
-                params.slug === "electronics" ? "url('/electronics_bg.jpg')" :
-                params.slug === "toys" ? "url('/toys_bg.jpg')" :
+              backgroundImage: slug === "clothing" ? "url('/cloth_bg.png')" :
+                slug === "footwear" ? "url('/footwear_bg.jpg')" :
+                slug === "accessories" ? "url('/Accessories_bg.jpg')" :
+                slug === "home" ? "url('/Home_bg.jpg')" :
+                slug === "beauty" ? "url('/beauty_bg.jpg')" :
+                slug === "electronics" ? "url('/electronics_bg.jpg')" :
+                slug === "toys" ? "url('/toys_bg.jpg')" :
                 "",
 
               backgroundSize: "cover",
@@ -126,13 +128,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
               {/* Simple underline */}
               <div className={`h-1 w-32 ${
-                params.slug === "home" ? "bg-amber-100" :
-                params.slug === "clothing" ? "bg-yellow-500" :
-                params.slug === "footwear" ? "bg-red-500" :
-                params.slug === "accessories" ? "bg-purple-500" :
-                params.slug === "electronics" ? "bg-blue-500" :
-                params.slug === "beauty" ? "bg-pink-500" :
-                params.slug === "toys" ? "bg-amber-500" :
+                slug === "home" ? "bg-amber-100" :
+                slug === "clothing" ? "bg-yellow-500" :
+                slug === "footwear" ? "bg-red-500" :
+                slug === "accessories" ? "bg-purple-500" :
+                slug === "electronics" ? "bg-blue-500" :
+                slug === "beauty" ? "bg-pink-500" :
+                slug === "toys" ? "bg-amber-500" :
                 "bg-teal-500"
               } mb-8`} aria-hidden="true"></div>
 
@@ -146,26 +148,26 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 <div className="flex items-center group">
                   <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-slate-800 border border-slate-700 mr-4" aria-hidden="true">
                     <Heart className={`w-6 h-6 ${
-                      params.slug === "home" ? "text-amber-100" :
-                      params.slug === "clothing" ? "text-yellow-400" :
-                      params.slug === "footwear" ? "text-red-400" :
-                      params.slug === "accessories" ? "text-purple-400" :
-                      params.slug === "electronics" ? "text-blue-400" :
-                      params.slug === "beauty" ? "text-pink-400" :
-                      params.slug === "toys" ? "text-amber-400" :
+                      slug === "home" ? "text-amber-100" :
+                      slug === "clothing" ? "text-yellow-400" :
+                      slug === "footwear" ? "text-red-400" :
+                      slug === "accessories" ? "text-purple-400" :
+                      slug === "electronics" ? "text-blue-400" :
+                      slug === "beauty" ? "text-pink-400" :
+                      slug === "toys" ? "text-amber-400" :
                       "text-teal-400"
                     }`} />
                   </div>
                   <div>
                     <div className="text-white font-medium text-lg">{rating}/5</div>
                     <div className={`text-xs ${
-                      params.slug === "home" ? "text-amber-100/70" :
-                      params.slug === "clothing" ? "text-yellow-300/70" :
-                      params.slug === "footwear" ? "text-red-300/70" :
-                      params.slug === "accessories" ? "text-purple-300/70" :
-                      params.slug === "electronics" ? "text-blue-300/70" :
-                      params.slug === "beauty" ? "text-pink-300/70" :
-                      params.slug === "toys" ? "text-amber-300/70" :
+                      slug === "home" ? "text-amber-100/70" :
+                      slug === "clothing" ? "text-yellow-300/70" :
+                      slug === "footwear" ? "text-red-300/70" :
+                      slug === "accessories" ? "text-purple-300/70" :
+                      slug === "electronics" ? "text-blue-300/70" :
+                      slug === "beauty" ? "text-pink-300/70" :
+                      slug === "toys" ? "text-amber-300/70" :
                       "text-teal-300/70"
                     }`}>Customer Rating</div>
                   </div>
@@ -173,26 +175,26 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 <div className="flex items-center group">
                   <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-slate-800 border border-slate-700 mr-4" aria-hidden="true">
                     <ShoppingBag className={`w-6 h-6 ${
-                      params.slug === "home" ? "text-amber-100" :
-                      params.slug === "clothing" ? "text-yellow-400" :
-                      params.slug === "footwear" ? "text-red-400" :
-                      params.slug === "accessories" ? "text-purple-400" :
-                      params.slug === "electronics" ? "text-blue-400" :
-                      params.slug === "beauty" ? "text-pink-400" :
-                      params.slug === "toys" ? "text-amber-400" :
+                      slug === "home" ? "text-amber-100" :
+                      slug === "clothing" ? "text-yellow-400" :
+                      slug === "footwear" ? "text-red-400" :
+                      slug === "accessories" ? "text-purple-400" :
+                      slug === "electronics" ? "text-blue-400" :
+                      slug === "beauty" ? "text-pink-400" :
+                      slug === "toys" ? "text-amber-400" :
                       "text-teal-400"
                     }`} />
                   </div>
                   <div>
                     <div className="text-white font-medium text-lg">{productCount}+</div>
                     <div className={`text-xs ${
-                      params.slug === "home" ? "text-amber-100/70" :
-                      params.slug === "clothing" ? "text-yellow-300/70" :
-                      params.slug === "footwear" ? "text-red-300/70" :
-                      params.slug === "accessories" ? "text-purple-300/70" :
-                      params.slug === "electronics" ? "text-blue-300/70" :
-                      params.slug === "beauty" ? "text-pink-300/70" :
-                      params.slug === "toys" ? "text-amber-300/70" :
+                      slug === "home" ? "text-amber-100/70" :
+                      slug === "clothing" ? "text-yellow-300/70" :
+                      slug === "footwear" ? "text-red-300/70" :
+                      slug === "accessories" ? "text-purple-300/70" :
+                      slug === "electronics" ? "text-blue-300/70" :
+                      slug === "beauty" ? "text-pink-300/70" :
+                      slug === "toys" ? "text-amber-300/70" :
                       "text-teal-300/70"
                     }`}>Products</div>
                   </div>
@@ -203,44 +205,44 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               <div className="flex flex-wrap gap-4 relative z-30">
                 <Button 
                   className={`${
-                    params.slug === "home" 
+                    slug === "home" 
                       ? "bg-amber-50 hover:bg-amber-100 text-slate-900" 
-                      : params.slug === "clothing"
+                      : slug === "clothing"
                       ? "bg-yellow-500 hover:bg-yellow-600 text-white"
-                      : params.slug === "footwear"
+                      : slug === "footwear"
                       ? "bg-red-500 hover:bg-red-600 text-white"
-                      : params.slug === "accessories"
+                      : slug === "accessories"
                       ? "bg-purple-500 hover:bg-purple-600 text-white"
-                      : params.slug === "electronics"
+                      : slug === "electronics"
                       ? "bg-blue-500 hover:bg-blue-600 text-white"
-                      : params.slug === "beauty"
+                      : slug === "beauty"
                       ? "bg-pink-500 hover:bg-pink-600 text-white"
-                      : params.slug === "toys"
+                      : slug === "toys"
                       ? "bg-amber-500 hover:bg-amber-600 text-white"
                       : "bg-teal-500 hover:bg-teal-600 text-white"
                   } shadow-md px-6 flex items-center gap-2`}
                   size="lg"
                   aria-label="Shop Now"
                 >
-                  <ShoppingCart className={`w-5 h-5 ${params.slug === "home" ? "text-slate-900" : ""}`} aria-hidden="true" />
+                  <ShoppingCart className={`w-5 h-5 ${slug === "home" ? "text-slate-900" : ""}`} aria-hidden="true" />
                   <span className="font-medium">Shop Now</span>
                 </Button>
                 
                 <Button 
                   className={`${
-                    params.slug === "home" 
+                    slug === "home" 
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-amber-100/30" 
-                      : params.slug === "clothing"
+                      : slug === "clothing"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-yellow-500/30"
-                      : params.slug === "footwear"
+                      : slug === "footwear"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-red-800/20"
-                      : params.slug === "accessories"
+                      : slug === "accessories"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-purple-800/20"
-                      : params.slug === "electronics"
+                      : slug === "electronics"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-blue-800/20"
-                      : params.slug === "beauty"
+                      : slug === "beauty"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-pink-800/20"
-                      : params.slug === "toys"
+                      : slug === "toys"
                       ? "bg-slate-900 hover:bg-slate-800 text-white border border-amber-800/20"
                       : "bg-slate-800 hover:bg-slate-700 text-white border border-slate-700"
                   } shadow-md px-6 flex items-center gap-2`}
@@ -249,16 +251,16 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                   aria-label="View Lookbook"
                 >
                   <MessageCircle className={`w-5 h-5 ${
-                    params.slug === "home" ? "text-amber-100" : 
-                    params.slug === "clothing" ? "text-yellow-400" :
-                    params.slug === "footwear" ? "text-red-400" :
-                    params.slug === "accessories" ? "text-purple-400" :
-                    params.slug === "electronics" ? "text-blue-400" :
-                    params.slug === "beauty" ? "text-pink-400" :
-                    params.slug === "toys" ? "text-amber-400" :
+                    slug === "home" ? "text-amber-100" :
+                    slug === "clothing" ? "text-yellow-400" :
+                    slug === "footwear" ? "text-red-400" :
+                    slug === "accessories" ? "text-purple-400" :
+                    slug === "electronics" ? "text-blue-400" :
+                    slug === "beauty" ? "text-pink-400" :
+                    slug === "toys" ? "text-amber-400" :
                     "text-teal-400"
                   }`} aria-hidden="true" />
-                  <span>View Lookbook</span>
+                  <span className="font-medium">View Lookbook</span>
                 </Button>
               </div>
             </div>
