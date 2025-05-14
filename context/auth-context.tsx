@@ -30,10 +30,13 @@ const USER_SESSION_KEY = "Next_mart_auth_session";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [authInitialized, setAuthInitialized] = useState(false)
 
   // Function to check and refresh the user session
-  const refreshUserSession = async () => {
+  const refreshUserSession = async (): Promise<void> => {
     try {
+      if (typeof window === 'undefined') return;
+      
       // Get the current user from Firebase
       const currentUser = auth.currentUser;
       
@@ -47,14 +50,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         
         // Update the session information
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify({
-            timestamp: Date.now(),
-            userId: currentUser.uid
-          }));
-        }
+        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify({
+          timestamp: Date.now(),
+          userId: currentUser.uid
+        }));
         
         setUser(updatedUser);
+      } else {
+        // No current user, but don't clear the state here
+        // This function is just for refreshing, not for signing out
       }
     } catch (error) {
       console.error("Error refreshing user session:", error);
@@ -63,6 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Set up auth state listener
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     let unsubscribe: () => void;
     
     const setupAuthListener = () => {
@@ -79,34 +85,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
           
           // Store session information
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify({
-              timestamp: Date.now(),
-              userId: authUser.uid
-            }));
-          }
+          sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify({
+            timestamp: Date.now(),
+            userId: authUser.uid
+          }));
           
           setUser(mappedUser);
         } else {
           // If there's no auth user but there's a session, try to recover
-          if (typeof window !== 'undefined') {
-            const sessionData = sessionStorage.getItem(USER_SESSION_KEY);
-            
-            if (sessionData) {
-              // There was a session but auth state says logged out
-              // This could happen during page reloads - should retry auth check
-              console.log("Session found but no auth user, refreshing auth state...");
-              refreshUserSession();
-            } else {
-              // No session data, definitely logged out
-              setUser(null);
-              sessionStorage.removeItem(USER_SESSION_KEY);
-            }
+          const sessionData = sessionStorage.getItem(USER_SESSION_KEY);
+          
+          if (sessionData) {
+            // There was a session but auth state says logged out
+            // This could happen during page reloads - should retry auth check
+            console.log("Session found but no auth user, refreshing auth state...");
+            refreshUserSession();
           } else {
+            // No session data, definitely logged out
             setUser(null);
+            sessionStorage.removeItem(USER_SESSION_KEY);
           }
         }
         setLoading(false);
+        setAuthInitialized(true);
       });
     };
     
@@ -121,6 +122,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string, displayName?: string) => {
     try {
+      if (!auth.createUserWithEmailAndPassword) {
+        throw new Error("Authentication service is not available");
+      }
+      
       const { user: newUser } = await auth.createUserWithEmailAndPassword(email, password);
       
       // Update user profile if display name is provided
@@ -137,7 +142,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
       
-      return newUser as User;
+      const mappedUser: User = {
+        uid: newUser.uid,
+        email: newUser.email,
+        displayName: newUser.displayName || displayName || null,
+        photoURL: newUser.photoURL || null
+      };
+      
+      setUser(mappedUser);
+      return mappedUser;
     } catch (error) {
       console.error("Error signing up:", error);
       throw error;
@@ -146,6 +159,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      if (!auth.signInWithEmailAndPassword) {
+        throw new Error("Authentication service is not available");
+      }
+      
       const { user: authUser } = await auth.signInWithEmailAndPassword(email, password);
       
       // Store session information
@@ -156,7 +173,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
       
-      return authUser as User;
+      const mappedUser: User = {
+        uid: authUser.uid,
+        email: authUser.email,
+        displayName: authUser.displayName || null,
+        photoURL: authUser.photoURL || null
+      };
+      
+      setUser(mappedUser);
+      return mappedUser;
     } catch (error) {
       console.error("Error signing in:", error);
       throw error;
@@ -166,6 +191,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       console.log("Starting Google sign-in process");
+      
+      // Make sure auth and signInWithPopup are available
+      if (!auth.signInWithPopup) {
+        throw new Error("Google authentication is not available");
+      }
       
       // Use the auth object's signInWithPopup method
       // This will use the real Google sign-in in both development and production
@@ -180,7 +210,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
       
-      return authUser as User;
+      const mappedUser: User = {
+        uid: authUser.uid,
+        email: authUser.email,
+        displayName: authUser.displayName || null,
+        photoURL: authUser.photoURL || null
+      };
+      
+      setUser(mappedUser);
+      return mappedUser;
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       
@@ -198,11 +236,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
+      if (!auth.signOut) {
+        throw new Error("Authentication service is not available");
+      }
+      
       await auth.signOut();
+      
       // Clear session information
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem(USER_SESSION_KEY);
       }
+      
+      setUser(null);
     } catch (error) {
       console.error("Error signing out:", error);
       throw error;
@@ -211,7 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthContextType = {
     user,
-    loading,
+    loading: loading || !authInitialized,
     signUp,
     signIn,
     signInWithGoogle,
