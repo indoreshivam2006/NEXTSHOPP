@@ -81,8 +81,14 @@ export default function Hero() {
           </h1>
           
           <p className="mb-8 text-lg md:text-xl leading-relaxed text-white/80 backdrop-blur-sm max-w-md">
-            Experience the next generation of e-commerce with AI-curated collections, neural sizing, and immersive blockchain-verified experiences.
+            A blazing-fast e-commerce platform built with Next.js 15, Firebase, and 60+ UI components — featuring real-time cart, wishlist, multi-step checkout, and Google OAuth.
           </p>
+          
+          {/* Builder credit badge */}
+          <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm backdrop-blur-xl">
+            <span className="mr-2">👨‍💻</span>
+            <span className="text-white/90">Built solo by Shivam Indore · Next.js 15 + Firebase</span>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
@@ -155,41 +161,41 @@ export default function Hero() {
             </Button>
           </div>
           
-          {/* New features badges */}
+          {/* Real features badges */}
           <div className="mt-8 flex flex-wrap gap-2">
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs backdrop-blur-md hover:bg-white/15 transition-colors cursor-default group relative">
-              <span className="relative z-10">Neural Styling</span>
+              <span className="relative z-10">🛒 Real-time Cart</span>
               <span className="absolute inset-0 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full bg-gradient-to-r from-indigo-600/20 to-purple-600/20"></span>
             </span>
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs backdrop-blur-md hover:bg-white/15 transition-colors cursor-default group relative">
-              <span className="relative z-10">Quantum Eco Fibers</span>
+              <span className="relative z-10">❤️ Wishlist</span>
               <span className="absolute inset-0 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full bg-gradient-to-r from-green-600/20 to-cyan-600/20"></span>
             </span>
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs backdrop-blur-md hover:bg-white/15 transition-colors cursor-default group relative">
-              <span className="relative z-10">Holographic Try-On</span>
+              <span className="relative z-10">🔐 Google OAuth</span>
               <span className="absolute inset-0 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full bg-gradient-to-r from-blue-600/20 to-indigo-600/20"></span>
             </span>
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs backdrop-blur-md hover:bg-white/15 transition-colors cursor-default group relative">
-              <span className="relative z-10">Adaptive Fabrics</span>
+              <span className="relative z-10">📦 Order Tracking</span>
               <span className="absolute inset-0 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20"></span>
             </span>
           </div>
           
-          {/* Animated stats counter */}
+          {/* Real stats counter */}
           <div className="mt-12 flex items-center gap-8">
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-cyan-100">99%</span>
-              <span className="text-xs text-white/60">Carbon Negative</span>
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-cyan-100">60+</span>
+              <span className="text-xs text-white/60">UI Components</span>
             </div>
             <div className="h-8 w-px bg-white/10"></div>
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-100">3D</span>
-              <span className="text-xs text-white/60">Neural Fitting</span>
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-100">React 19</span>
+              <span className="text-xs text-white/60">Latest Framework</span>
             </div>
             <div className="h-8 w-px bg-white/10"></div>
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-indigo-100">24/7</span>
-              <span className="text-xs text-white/60">AI Assistance</span>
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-indigo-100">🔥</span>
+              <span className="text-xs text-white/60">Firebase Powered</span>
             </div>
           </div>
         </div>

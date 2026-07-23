@@ -4,7 +4,7 @@ import Newsletter from "@/components/newsletter"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ShopCategories } from "./client-imports"
-import { Zap, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 
 export default function Home() {
   return (
@@ -58,110 +58,75 @@ export default function Home() {
           {/* Category Cards Grid */}
           <ShopCategories />
           
-          {/* Shopping Benefits - Updated for 2025 */}
-          <div className="mt-24 grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              {
-                icon: (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600">
-                    <path d="M14 9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5Z" />
-                    <path d="M7 14a2 2 0 0 1-2-2V4" />
-                    <path d="M22 14v5a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2Z" />
-                    <path d="M12 14v7" />
-                    <path d="M17 14v7" />
-                  </svg>
-                ),
-                title: "Drone Delivery",
-                description: "30-minute delivery by AI-powered drones"
-              },
-              {
-                icon: (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                ),
-                title: "Blockchain Verified",
-                description: "Authentic products with digital certificates"
-              },
-              {
-                icon: (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600">
-                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                ),
-                title: "Carbon Negative",
-                description: "Every purchase removes 1kg of CO2"
-              },
-              {
-                icon: (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600">
-                    <path d="M3 5v14" />
-                    <path d="M21 12H7" />
-                    <path d="m15 18 6-6-6-6" />
-                  </svg>
-                ),
-                title: "Virtual Try-On",
-                description: "AR technology for perfect fit every time"
-              }
-            ].map((benefit, index) => (
-              <div key={index} className="flex flex-col items-center text-center p-8 bg-white rounded-2xl border border-indigo-50 hover:shadow-lg hover:shadow-indigo-100 transition-all group">
-                <div className="p-4 mb-5 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
-                  {benefit.icon}
+          {/* What's Actually Built - Real Features Grid */}
+          <div className="mt-24">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">What&apos;s Actually Built</h2>
+              <p className="mt-2 text-gray-600">Real features, real code — no buzzwords</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: "🛒", title: "Smart Cart", desc: "Real-time cart management with quantity controls and persistent local storage" },
+                { icon: "❤️", title: "Wishlist", desc: "Save favourite products and move them to cart in one click" },
+                { icon: "🔐", title: "Firebase Auth", desc: "Secure Google OAuth and email/password login with protected routes" },
+                { icon: "📦", title: "Order Tracking", desc: "Multi-step checkout flow with real-time order status updates" },
+                { icon: "🎨", title: "60+ UI Components", desc: "Built with shadcn/ui and Radix UI for accessible, polished interfaces" },
+                { icon: "✨", title: "Smooth Animations", desc: "GSAP and Framer Motion for professional page transitions and interactions" },
+                { icon: "🌙", title: "Dark / Light Mode", desc: "System-aware theme toggle with persistent preference" },
+                { icon: "📊", title: "Product Dashboard", desc: "Statistics and analytics visualised with Recharts" },
+              ].map((feature, index) => (
+                <div key={index} className="flex flex-col items-center text-center p-8 bg-white rounded-2xl border border-indigo-50 hover:shadow-lg hover:shadow-indigo-100 transition-all group">
+                  <div className="text-4xl mb-5">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-gray-600 text-sm">{feature.desc}</p>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
       
-      {/* Tech Integration Section - New for 2025 */}
+      {/* Tech Stack Section */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Integrated Technology</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
             <p className="text-gray-600 max-w-xl mx-auto">
-              Our 2025 collections combine fashion with cutting-edge technology for an enhanced lifestyle experience.
+              Modern tools chosen for performance and developer experience
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: "Smart Climate Adaptation",
-                description: "Clothing that adjusts to your body temperature and environmental conditions.",
+                title: "Frontend",
+                items: "Next.js 15 · React 19 · TypeScript · Tailwind CSS",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
                   </svg>
                 ),
               },
               {
-                title: "Biometric Feedback",
-                description: "Integrated sensors track vital signs and adjust fabric tension for optimal comfort.",
+                title: "UI & Animation",
+                items: "shadcn/ui · Radix UI · GSAP · Framer Motion",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                   </svg>
                 ),
               },
               {
-                title: "Solar Charging Fabrics",
-                description: "Embedded micro-solar cells keep your devices charged throughout the day.",
+                title: "Backend & Auth",
+                items: "Firebase Auth · Firestore · Google OAuth · Vercel",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="5" />
-                    <path d="M12 1v2" />
-                    <path d="M12 21v2" />
-                    <path d="M4.22 4.22l1.42 1.42" />
-                    <path d="M18.36 18.36l1.42 1.42" />
-                    <path d="M1 12h2" />
-                    <path d="M21 12h2" />
-                    <path d="M4.22 19.78l1.42-1.42" />
-                    <path d="M18.36 5.64l1.42-1.42" />
+                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                    <path d="M3 9h18" />
+                    <path d="M9 21V9" />
                   </svg>
                 ),
               },
@@ -171,7 +136,7 @@ export default function Home() {
                   <span className="text-indigo-600">{tech.icon}</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{tech.title}</h3>
-                <p className="text-gray-600">{tech.description}</p>
+                <p className="text-gray-600">{tech.items}</p>
               </div>
             ))}
           </div>

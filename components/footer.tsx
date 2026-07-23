@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Check, X, Loader2, Mail, ChevronRight, MapPin, Phone, Globe } from "lucide-react"
+import { Github, Briefcase, Linkedin, Check, X, Loader2, Mail, ChevronRight, MapPin, Code, Globe } from "lucide-react"
 import { useState } from "react"
 
 export default function Footer() {
@@ -133,28 +133,28 @@ export default function Footer() {
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-600">
-                  <MapPin size={16} />
-                  <span className="text-sm">Jagran LakeCity University, D-block Boys Hostel</span>
+                  <Code size={16} />
+                  <span className="text-sm">Built by Shivam Indore · Bhopal, India</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-600">
-                  <Phone size={16} />
-                  <span className="text-sm">+91 1800-123-4567</span>
+                  <Github size={16} />
+                  <a href="https://github.com/indoreshivam2006" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-indigo-600 transition-colors">github.com/indoreshivam2006</a>
                 </div>
                 <div className="flex items-center gap-3 text-gray-600">
                   <Globe size={16} />
-                  <span className="text-sm">www.nextshop.com</span>
+                  <a href="https://nextshopp-azure.vercel.app" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-indigo-600 transition-colors">nextshopp-azure.vercel.app</a>
                 </div>
               </div>
               
               <div className="flex items-center gap-4 pt-2">
-                <a href="#" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-                  <Facebook size={18} />
+                <a href="https://github.com/indoreshivam2006" target="_blank" rel="noopener noreferrer" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
+                  <Github size={18} />
                 </a>
-                <a href="#" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-                  <Instagram size={18} />
+                <a href="https://shivamindoreportfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
+                  <Briefcase size={18} />
                 </a>
-                <a href="#" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-                  <Twitter size={18} />
+                <a href="https://linkedin.com/in/shivam-indore" target="_blank" rel="noopener noreferrer" className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
+                  <Linkedin size={18} />
                 </a>
               </div>
             </div>

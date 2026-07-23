@@ -4,6 +4,12 @@
 
 ### Next-Generation E-Commerce Platform
 
+🌐 **Live Demo:** https://nextshopp-azure.vercel.app/
+
+> Built solo by **Shivam Indore**
+> GitHub: https://github.com/indoreshivam2006
+> Portfolio: https://shivamindoreportfolio.vercel.app
+
 [![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -14,7 +20,7 @@
   <strong>A blazing-fast, modern e-commerce platform built with cutting-edge technologies for the 2025 retail landscape.</strong>
 </p>
 
-[Live Demo](#) · [Report Bug](../../issues) · [Request Feature](../../issues)
+[Live Demo](https://nextshopp-azure.vercel.app/) · [Report Bug](../../issues) · [Request Feature](../../issues)
 
 ---
 
@@ -32,7 +38,7 @@
 - [Project Structure](#-project-structure)
 - [Screenshots](#-screenshots)
 - [Performance](#-performance)
-- [Contributing](#-contributing)
+- [Built By](#-built-by)
 - [License](#-license)
 
 ---
@@ -76,7 +82,7 @@
 - **Protected Routes** with auth guards
 - **Session Management** with auto-refresh
 
-</td>indore
+</td>
 </tr>
 <tr>
 <td width="50%">
@@ -194,8 +200,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/nextshopp.git
-   cd nextshopp
+   git clone https://github.com/indoreshivam2006/NEXTSHOPP.git
+   cd NEXTSHOPP
    ```
 
 2. **Install dependencies**
@@ -338,22 +344,12 @@ NEXTSHOPP is optimized for exceptional performance:
 
 ---
 
-## 🤝 Contributing
+## 👨‍💻 Built By
 
-We welcome contributions! Please follow these steps:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-### Code Style
-
-- Follow **ESLint** configuration
-- Use **TypeScript** for all new files
-- Write **meaningful commit messages**
-- Add **tests** for new features
+**Shivam Indore** — Solo Developer
+- GitHub: https://github.com/indoreshivam2006
+- Portfolio: https://shivamindoreportfolio.vercel.app
+- Live: https://nextshopp-azure.vercel.app/
 
 ---
 
@@ -365,10 +361,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 <div align="center">
 
-### Built with ❤️ using Next.js 15 & React 19
+### Built with ❤️ by **Shivam Indore** using Next.js 15 & React 19
 
-[![Stars](https://img.shields.io/github/stars/yourusername/nextshopp?style=social)](../../stargazers)
-[![Forks](https://img.shields.io/github/forks/yourusername/nextshopp?style=social)](../../network/members)
+[![Stars](https://img.shields.io/github/stars/indoreshivam2006/NEXTSHOPP?style=social)](../../stargazers)
+[![Forks](https://img.shields.io/github/forks/indoreshivam2006/NEXTSHOPP?style=social)](../../network/members)
 
 **[⬆ Back to Top](#-nextshopp)**
 
