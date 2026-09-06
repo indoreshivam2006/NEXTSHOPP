@@ -60,6 +60,19 @@ const config: Config = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			arcsphere: {
+  				bg: '#f0ebe6',
+  				sand: '#e2dacf',
+  				stone: '#efede9',
+  				dark: '#181818',
+  				darkElevated: '#222222',
+  				text: '#181818',
+  				textSecondary: '#4f4742',
+  				muted: '#7c7c7c',
+  				border: 'rgba(24, 24, 24, 0.1)',
+  				borderDark: '#38322c',
+  				divider: '#cacac8'
   			}
   		},
   		borderRadius: {
@@ -124,11 +137,11 @@ const config: Config = {
             },
             'pulse-glow': {
               '0%, 100%': {
-                opacity: 0.4,
+                opacity: '0.4',
                 transform: 'scale(1)'
               },
               '50%': {
-                opacity: 1,
+                opacity: '1',
                 transform: 'scale(1.5)'
               }
             },
@@ -149,6 +162,10 @@ const config: Config = {
                 'background-size': '200% 200%',
                 'background-position': 'right center'
               }
+            },
+            'marquee': {
+              '0%': { transform: 'translateX(0%)' },
+              '100%': { transform: 'translateX(-50%)' }
             }
   		},
   		animation: {
@@ -160,7 +177,8 @@ const config: Config = {
             'float-fast': 'float-fast 4s ease-in-out infinite',
             'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
             'subtle-drift': 'subtle-drift 30s linear infinite',
-            'gradient-x': 'gradient-x 5s ease infinite'
+            'gradient-x': 'gradient-x 5s ease infinite',
+            'marquee': 'marquee 25s linear infinite'
   		},
         animationDelay: {
           '500': '500ms',

@@ -8,7 +8,7 @@ import { useAuth } from "@/context/auth-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useCart } from "@/context/cart-context"
-import { useWishlist } from "@/context/wishlist-context"
+import { useWishlist, WishlistItem } from "@/context/wishlist-context"
 import { Heart, Trash2 } from "lucide-react"
 import { formatRupees } from "@/lib/utils"
 
@@ -35,7 +35,7 @@ export default function WishlistPage() {
     return () => clearTimeout(timer)
   }, [user, router])
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = (product: WishlistItem) => {
     addToCart({
       id: product.id,
       name: product.name,

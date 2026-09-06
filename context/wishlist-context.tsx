@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { useAuth } from "@/context/auth-context"
 import { useToast } from "@/components/ui/use-toast"
+import { useRouter } from "next/navigation"
 
 // Define types for wishlist item
 export type WishlistItem = {
@@ -49,6 +50,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [userLists, setUserLists] = useState<UserList[]>([])
   const { user } = useAuth()
   const { toast } = useToast()
+  const router = useRouter()
 
   // Load wishlist and user lists from localStorage when component mounts and user changes
   useEffect(() => {
@@ -133,9 +135,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) {
       toast({
         title: "Please log in",
-        description: "You need to be logged in to save items to your wishlist.",
+        description: "You need to be logged in to like or save items to your wishlist.",
         variant: "destructive",
       });
+      if (typeof window !== "undefined") {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        router.push(`/auth/login?redirect=${returnUrl}`);
+      }
       return;
     }
 
@@ -227,6 +233,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         description: "You need to be logged in to create lists.",
         variant: "destructive",
       });
+      if (typeof window !== "undefined") {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        router.push(`/auth/login?redirect=${returnUrl}`);
+      }
       throw new Error("User not logged in");
     }
 

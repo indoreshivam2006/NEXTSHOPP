@@ -68,19 +68,27 @@ function ProductsContent() {
   }, [searchParams]);
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">All Products</h1>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 md:sticky md:top-4 md:self-start">
+    <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 md:py-20 bg-[#f0ebe6]">
+      <div className="mb-10">
+        <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c] block mb-2">
+          [ DIRECTORY // COMPLETE INVENTORY ]
+        </span>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight uppercase text-[#181818]">
+          Catalog Archive
+        </h1>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+        <div className="w-full md:w-1/4 md:sticky md:top-24 md:self-start">
           <ProductFilters />
         </div>
-        <div className="w-full md:w-3/4 md:max-h-[calc(100vh+20rem)] md:overflow-y-auto">
-          <div className="flex justify-between items-center mb-6 sticky top-0 bg-white z-10">
-            <p className="text-gray-600">
+        <div className="w-full md:w-3/4">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#181818]/10 sticky top-20 bg-[#f0ebe6]/95 backdrop-blur-sm z-10">
+            <p className="text-xs font-mono uppercase tracking-wider text-[#7c7c7c]">
               {loading ? (
-                <span className="inline-block w-24 h-4 bg-gray-200 rounded animate-pulse"></span>
+                <span className="inline-block w-24 h-4 bg-[#181818]/10 rounded-full animate-pulse"></span>
               ) : (
-                `Showing ${productCount} product${productCount !== 1 ? 's' : ''}`
+                `Total Objects Available: ${productCount}`
               )}
             </p>
             <ProductSort />

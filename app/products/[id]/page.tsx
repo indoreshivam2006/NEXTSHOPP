@@ -1,14 +1,13 @@
 import { notFound } from "next/navigation"
-import AddToCartButton from "@/components/add-to-cart-button"
 import ProductGallery from "@/components/product-gallery"
 import RelatedProducts from "@/components/related-products"
+import ProductPurchaseActions from "@/components/product-purchase-actions"
 import { getProductById } from "@/lib/firebase/products"
 import { formatRupees } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ShoppingCart } from "lucide-react"
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await getProductById(params.id)
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await Promise.resolve(params)
+  const product = await getProductById(resolvedParams.id)
 
   if (!product) {
     notFound()
@@ -22,17 +21,26 @@ export default async function ProductPage({ params }: { params: { id: string } }
   }));
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 md:py-20 bg-[#f0ebe6] text-[#181818]">
+      <div className="mb-8">
+        <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c] block mb-2">
+          [ ARCHITECTURAL OBJECT // {product.category.toUpperCase()} ]
+        </span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
         <ProductGallery images={formattedImages} productName={product.name} />
         <div className="flex flex-col gap-6">
-          <h1 className="text-3xl font-bold">{product.name}</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-3xl font-bold">₹{product.price.toLocaleString()}</span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-[#181818]">
+            {product.name}
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl font-bold font-mono text-[#181818]">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
               <>
-                <span className="text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
-                <span className="text-green-600 font-medium">{product.discount}%</span>
+                <span className="text-gray-400 line-through text-sm font-mono">₹{product.originalPrice.toLocaleString()}</span>
+                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#181818] text-[#f0ebe6]">
+                  {product.discount}% OFF
+                </span>
               </>
             )}
           </div>
@@ -210,47 +218,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
             </ul>
           </div>
           
-          {/* Only show size selection if product has sizes */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Select Size</h3>
-              <div className="flex gap-2">
-                {product.sizes.map((size) => (
-                  <button key={size} className="border border-gray-300 px-4 py-2 rounded hover:border-black">
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Only show color selection if product has colors */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Select Color</h3>
-              <div className="flex gap-2">
-                {product.colors.map((color) => (
-                  <button
-                    key={color}
-                    className="w-8 h-8 rounded-full border border-gray-300"
-                    style={{ backgroundColor: color }}
-                    aria-label={`Select ${color} color`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-          
           <div className="mt-6">
-            <div className="flex gap-4">
-              <Button size="lg" variant="outline">
-                Buy Now
-              </Button>
-              <Button size="lg">
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Add to Cart
-              </Button>
-            </div>
+            <ProductPurchaseActions product={product} />
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useCart } from "@/context/cart-context"
 import { useWishlist } from "@/context/wishlist-context"
 import { formatRupees } from "@/lib/utils"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { 
   Dialog, 
   DialogContent, 
@@ -65,6 +65,7 @@ export default function ProductGrid({ categoryId }: ProductGridProps) {
     addList
   } = useWishlist()
   const searchParams = useSearchParams()
+  const router = useRouter()
   
   // State for the list dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -145,6 +146,19 @@ export default function ProductGrid({ categoryId }: ProductGridProps) {
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault()
     e.stopPropagation()
+
+    if (!user) {
+      toast({
+        title: "Please log in",
+        description: "You must be logged in to add items to your cart.",
+        variant: "destructive",
+      })
+      if (typeof window !== "undefined") {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search)
+        router.push(`/auth/login?redirect=${returnUrl}`)
+      }
+      return
+    }
     
     const item = {
       id: product.id,
@@ -175,6 +189,10 @@ export default function ProductGrid({ categoryId }: ProductGridProps) {
         description: "You need to be logged in to save items to your lists.",
         variant: "destructive",
       })
+      if (typeof window !== "undefined") {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search)
+        router.push(`/auth/login?redirect=${returnUrl}`)
+      }
       return
     }
     
@@ -278,6 +296,19 @@ export default function ProductGrid({ categoryId }: ProductGridProps) {
     e.preventDefault()
     e.stopPropagation()
     
+    if (!user) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to like or save items to your wishlist.",
+        variant: "destructive",
+      })
+      if (typeof window !== "undefined") {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search)
+        router.push(`/auth/login?redirect=${returnUrl}`)
+      }
+      return
+    }
+
     if (isItemInWishlist(product.id)) {
       removeFromWishlist(product.id)
     } else {
@@ -324,85 +355,82 @@ export default function ProductGrid({ categoryId }: ProductGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <Link
-            href={`/products/${product.id}`}
+          <div
             key={product.id}
-            className="group rounded-lg overflow-hidden border hover:shadow-lg transition-shadow"
+            className="group rounded-[20px] overflow-hidden bg-[#e2dacf]/30 hover:bg-[#e2dacf]/60 border border-[#181818]/10 hover:border-[#181818]/30 transition-all duration-400 flex flex-col justify-between"
           >
-            <div className="relative h-64 overflow-hidden">
+            <div className="relative h-64 overflow-hidden bg-white/70">
               {product.discount && product.discount > 0 && (
-                <div className="absolute top-2 left-2 z-10 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded">
+                <div className="absolute top-3 left-3 z-10 bg-[#181818] text-[#f0ebe6] px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-full">
                   {product.discount}% OFF
                 </div>
               )}
-              <Image
-                src={product.images[0] || "/product-placeholder.png"}
-                alt={product.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              <Link href={`/products/${product.id}`} className="block h-full w-full">
+                <Image
+                  src={product.images[0] || "/product-placeholder.png"}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                />
+              </Link>
               <button
                 type="button"
-                className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${
+                className={`absolute top-3 right-3 p-2 rounded-full border border-[#181818]/10 backdrop-blur-sm transition-all ${
                   isItemInWishlist(product.id) 
                   ? 'bg-red-50 text-red-500 hover:bg-red-100' 
-                  : 'bg-white text-gray-600 hover:text-red-500'
+                  : 'bg-white/80 text-[#181818] hover:bg-white'
                 }`}
                 onClick={(e) => handleOpenListDialog(e, product)}
                 aria-label={`${isItemInWishlist(product.id) ? 'Manage in lists' : 'Add to lists'}`}
               >
                 <Heart 
-                  className={`h-5 w-5 ${isItemInWishlist(product.id) ? 'fill-red-500' : ''}`} 
+                  className={`h-4 w-4 ${isItemInWishlist(product.id) ? 'fill-red-500' : ''}`} 
                 />
               </button>
             </div>
-            <div className="p-4">
-              <div className="flex items-center mb-1">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <svg 
-                      key={`${product.id}-star-${i}`}
-                      className={`w-3 h-3 ${i < product.rating ? "text-yellow-400" : "text-gray-300"}`} 
-                      fill="currentColor" 
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
+
+            <div className="p-5 flex flex-col flex-1 justify-between bg-[#f0ebe6]/80">
+              <div>
+                <div className="flex items-center justify-between text-xs text-[#7c7c7c] mb-1 font-mono uppercase">
+                  <span>{product.category}</span>
+                  <div className="flex items-center gap-1 text-[#181818]">
+                    <span className="text-yellow-500">★</span>
+                    <span>{product.rating}</span>
+                    <span className="text-gray-400">({product.reviewCount})</span>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-500 ml-1">({product.reviewCount})</span>
+                <Link href={`/products/${product.id}`}>
+                  <h3 className="font-bold text-base text-[#181818] group-hover:opacity-80 transition-opacity line-clamp-1">
+                    {product.name}
+                  </h3>
+                </Link>
               </div>
-              <h3 className="font-medium">{product.name}</h3>
-              <p className="text-gray-600 text-sm mb-2">{product.category}</p>
               
-              {/* Fixed-height price and button container */}
-              <div className="flex justify-between items-center mt-2">
-                {/* Price information with fixed formatting */}
+              <div className="flex justify-between items-center mt-4 pt-3 border-t border-[#181818]/10">
                 <div className="flex-1 min-w-0">
                   {product.originalPrice && product.originalPrice > product.price ? (
                     <div>
-                      <span className="font-bold block">{formatRupees(product.price)}</span>
-                      <span className="text-gray-500 line-through text-xs">{formatRupees(product.originalPrice)}</span>
+                      <span className="font-bold text-base text-[#181818] block">{formatRupees(product.price)}</span>
+                      <span className="text-gray-400 line-through text-xs font-mono">{formatRupees(product.originalPrice)}</span>
                     </div>
                   ) : (
-                    <span className="font-bold">{formatRupees(product.price)}</span>
+                    <span className="font-bold text-base text-[#181818]">{formatRupees(product.price)}</span>
                   )}
                 </div>
                 
-                {/* Add to cart button with fixed positioning */}
                 <Button
                   size="sm"
                   onClick={(e) => handleAddToCart(e, product)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="rounded-full bg-[#181818] hover:bg-[#38322c] text-[#f0ebe6] text-xs font-semibold uppercase tracking-wider px-4 py-1.5 transition-all"
                   aria-label={`Add ${product.name} to cart`}
                 >
                   Add to Cart
                 </Button>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 

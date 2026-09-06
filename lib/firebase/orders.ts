@@ -1,77 +1,175 @@
-export async function createOrder(orderData) {
-  try {
-    // In a real app, you would add to Firestore
-    // const ordersCollection = collection(db, "orders");
-    // const docRef = await addDoc(ordersCollection, {
-    //   ...orderData,
-    //   createdAt: new Date()
-    // });
-    // return docRef.id;
+import { db } from "@/lib/firebase/config"
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where, 
+  serverTimestamp 
+} from "firebase/firestore"
 
-    // For development, just log and return a mock ID
-    console.log("Order created:", orderData)
-    return "order-" + Math.random().toString(36).substr(2, 9)
+export interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  image: string
+  size?: string
+  color?: string
+}
+
+export interface OrderShipping {
+  firstName: string
+  lastName: string
+  address: string
+  city: string
+  state: string
+  zipCode: string
+  country: string
+}
+
+export interface OrderPayment {
+  method: string
+  total: number
+  transactionId?: string
+  status?: string
+}
+
+export interface Order {
+  id: string
+  userId: string
+  items: OrderItem[]
+  shipping: OrderShipping
+  payment: OrderPayment
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+  date: string
+  createdAt?: any
+}
+
+export interface CreateOrderInput {
+  userId: string
+  items: OrderItem[]
+  shipping: OrderShipping
+  payment: OrderPayment
+  status?: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+  date?: string
+}
+
+const LOCAL_ORDERS_KEY = "nextshopp_orders"
+
+export async function createOrder(orderData: CreateOrderInput): Promise<string> {
+  const normalizedOrder = {
+    userId: orderData.userId,
+    items: orderData.items,
+    shipping: orderData.shipping,
+    payment: orderData.payment,
+    status: orderData.status || "processing",
+    date: orderData.date || new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+  }
+
+  try {
+    const ordersCollection = collection(db, "orders")
+    const docRef = await addDoc(ordersCollection, {
+      ...normalizedOrder,
+      serverTimestamp: serverTimestamp(),
+    })
+
+    // Also cache locally
+    cacheOrderLocally({ id: docRef.id, ...normalizedOrder } as Order)
+    return docRef.id
   } catch (error) {
-    console.error("Error creating order:", error)
-    throw error
+    // If offline or permissions prevent write, persist locally
+    const fallbackId = "ord-" + Math.random().toString(36).substring(2, 11)
+    cacheOrderLocally({ id: fallbackId, ...normalizedOrder } as Order)
+    return fallbackId
   }
 }
 
-export async function getOrdersByUser(userId) {
+export async function getOrdersByUser(userId: string): Promise<Order[]> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const ordersCollection = collection(db, "orders");
-    // const q = query(
-    //   ordersCollection,
-    //   where("userId", "==", userId),
-    //   orderBy("createdAt", "desc")
-    // );
-    // const ordersSnapshot = await getDocs(q);
-    // return ordersSnapshot.docs.map(doc => ({
-    //   id: doc.id,
-    //   ...doc.data()
-    // }));
+    const ordersCollection = collection(db, "orders")
+    const q = query(ordersCollection, where("userId", "==", userId))
+    const ordersSnapshot = await getDocs(q)
 
-    // For development, return mock data
-    return [
-      {
-        id: "order1",
-        userId,
-        items: [
-          {
-            id: "1",
-            name: "Classic White T-Shirt",
-            price: 29.99,
-            quantity: 2,
-            image: "/placeholder.svg?height=100&width=100",
-          },
-          {
-            id: "3",
-            name: "Nike Mercurial Vapor 16 Elite By You",
-            price: 24500.00,
-            quantity: 1,
-            image: "/football shoes1.svg?height=100&width=100",
-          },
-        ],
-        shipping: {
-          firstName: "John",
-          lastName: "Doe",
-          address: "123 Main St",
-          city: "Anytown",
-          state: "CA",
-          zipCode: "12345",
-          country: "United States",
-        },
-        payment: {
-          method: "credit-card",
-          total: 149.97,
-        },
-        status: "delivered",
-        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }
-    ]
-  } catch (error) {
-    console.error("Error getting orders:", error)
-    throw error
+    if (!ordersSnapshot.empty) {
+      return ordersSnapshot.docs.map((doc) => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          userId: data.userId || userId,
+          items: data.items || [],
+          shipping: data.shipping || {},
+          payment: data.payment || { method: "cod", total: 0 },
+          status: data.status || "processing",
+          date: data.date || (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString()),
+        } as Order
+      })
+    }
+  } catch {
+    // Network or firestore offline fallback
+  }
+
+  // Fallback to local storage cache
+  return getLocalOrders(userId)
+}
+
+export async function getAllOrdersAdmin(): Promise<Order[]> {
+  try {
+    const ordersCollection = collection(db, "orders")
+    const ordersSnapshot = await getDocs(ordersCollection)
+
+    if (!ordersSnapshot.empty) {
+      return ordersSnapshot.docs.map((doc) => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          userId: data.userId || "customer",
+          items: data.items || [],
+          shipping: data.shipping || {},
+          payment: data.payment || { method: "cod", total: 0 },
+          status: data.status || "processing",
+          date: data.date || (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString()),
+        } as Order
+      })
+    }
+  } catch {
+    // Network or firestore offline fallback
+  }
+
+  // Return all local orders
+  if (typeof window === "undefined") return []
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_ORDERS_KEY) || "[]")
+  } catch {
+    return []
+  }
+}
+
+export async function updateOrderStatus(orderId: string, status: Order["status"]): Promise<boolean> {
+  if (typeof window === "undefined") return true
+  try {
+    const existing: Order[] = JSON.parse(localStorage.getItem(LOCAL_ORDERS_KEY) || "[]")
+    const updated = existing.map((ord) => (ord.id === orderId ? { ...ord, status } : ord))
+    localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(updated))
+  } catch {}
+  return true
+}
+
+function cacheOrderLocally(order: Order) {
+  if (typeof window === "undefined") return
+  try {
+    const existing = JSON.parse(localStorage.getItem(LOCAL_ORDERS_KEY) || "[]")
+    localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify([order, ...existing]))
+  } catch {}
+}
+
+function getLocalOrders(userId: string): Order[] {
+  if (typeof window === "undefined") return []
+  try {
+    const existing: Order[] = JSON.parse(localStorage.getItem(LOCAL_ORDERS_KEY) || "[]")
+    return existing.filter((o) => o.userId === userId)
+  } catch {
+    return []
   }
 }

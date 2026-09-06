@@ -15,7 +15,7 @@ export default function GalleryExamplePage() {
     },
     {
       id: "2",
-      src: "/football shoes1.avif",
+      src: "/football-shoes-1.avif",
       alt: "Shoes side view"
     },
     {
@@ -39,7 +39,7 @@ export default function GalleryExamplePage() {
     },
     {
       id: "2",
-      src: "/football shoes2.avif",
+      src: "/football-shoes-2.avif",
       alt: "Product image 2"
     },
     {

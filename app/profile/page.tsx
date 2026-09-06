@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { updateProfile as updateFirebaseProfile } from "firebase/auth"
 
 export default function ProfilePage() {
-  const { user, loading, signOut } = useAuth()
+  const { user, firebaseUser, loading, signOut, refreshUserSession } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
 
@@ -52,28 +52,27 @@ export default function ProfilePage() {
     }
   }, [user, loading, router])
 
-  const handleUpdateProfile = async (e) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsUpdating(true)
 
     try {
-      if (user) {
-        await updateFirebaseProfile(user, {
+      if (firebaseUser) {
+        await updateFirebaseProfile(firebaseUser, {
           displayName,
         })
-
-        // In a real app, you would update additional user data in Firestore
+        await refreshUserSession()
 
         toast({
           title: "Profile updated",
           description: "Your profile has been updated successfully.",
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error)
       toast({
         title: "Update failed",
-        description: error.message,
+        description: error?.message || "Failed to update profile",
         variant: "destructive",
       })
     } finally {
@@ -81,7 +80,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleUpdateAddress = async (e) => {
+  const handleUpdateAddress = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsUpdating(true)
 

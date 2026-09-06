@@ -2,15 +2,13 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import Header from "@/components/header"
-import Footer from "@/components/footer"
+import StoreShell from "@/components/store-shell"
 import { CartProvider } from "@/context/cart-context"
 import { AuthProvider } from "@/context/auth-context"
 import { WishlistProvider } from "@/context/wishlist-context"
 import { Toaster } from "@/components/ui/toaster"
 import { SmoothScrollProvider } from "@/context/smooth-scroll-context"
 import { ScrollToTop } from "@/components/ui/scroll-to-top"
-import { PageTransition } from "@/components/ui/page-transition"
 import { SmoothCursor } from "@/components/ui/smooth-cursor"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -33,15 +31,7 @@ export default function RootLayout({
           <CartProvider>
             <WishlistProvider>
               <SmoothScrollProvider>
-                <div className="flex min-h-screen flex-col">
-                  <Header />
-                  <div className="flex-1">
-                    <PageTransition>
-                      {children}
-                    </PageTransition>
-                  </div>
-                  <Footer />
-                </div>
+                <StoreShell>{children}</StoreShell>
                 <SmoothCursor 
                   color="rgba(0, 0, 0, 0.7)" 
                   size={18} 

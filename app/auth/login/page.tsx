@@ -1,18 +1,18 @@
 "use client"
 
-import { useState, FormEvent, useCallback, useEffect } from "react"
+import { useState, FormEvent, useCallback, useEffect, Suspense } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, ShieldCheck } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import ClickSpark from "@/components/ClickSpark"
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -20,8 +20,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [formErrors, setFormErrors] = useState<{email?: string; password?: string}>({})
-  const { signIn, signInWithGoogle, signOut, user } = useAuth()
+  const { signIn, signInWithGoogle, signOut, user, isAdmin, toggleAdminMode } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectParam = searchParams.get("redirect") || "/"
   const { toast } = useToast()
 
   // Clear form errors when input values change
@@ -48,10 +50,7 @@ export default function LoginPage() {
         localStorage.removeItem('mockUser');
         // If the auth context still has a user, sign them out
         if (user) {
-          console.log("Signing out existing user to allow new login");
-          signOut().catch(error => {
-            console.error("Error signing out:", error);
-          });
+          signOut().catch(() => {});
         }
       }
     }
@@ -119,7 +118,7 @@ export default function LoginPage() {
         description: "Welcome back!",
       })
       
-      router.push("/")
+      router.push(redirectParam)
     } catch (error: any) {
       console.error("Login error:", error)
       
@@ -152,17 +151,8 @@ export default function LoginPage() {
     setGoogleLoading(true);
 
     try {
-      console.log("Starting Google sign-in process");
-      
-      // Show "connecting" toast - without trying to dismiss it later
-      toast({
-        title: "Connecting to Google",
-        description: "Opening sign-in window...",
-      });
-      
       // Attempt to sign in with Google
-      const user = await signInWithGoogle();
-      console.log("Google sign-in successful", user);
+      await signInWithGoogle();
       
       // Show success toast
       toast({
@@ -172,7 +162,7 @@ export default function LoginPage() {
       
       // Add a slight delay before redirecting to ensure toasts are shown
       setTimeout(() => {
-        router.push("/");
+        router.push(redirectParam);
       }, 500);
     } catch (error: any) {
       console.error("Google sign-in error:", error);
@@ -217,25 +207,21 @@ export default function LoginPage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white px-4 py-12 sm:px-6 lg:px-8 relative">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -left-20 -top-20 w-60 h-60 rounded-full bg-primary/5 blur-3xl"></div>
-        <div className="absolute right-0 top-1/3 w-80 h-80 rounded-full bg-indigo-400/10 blur-3xl"></div>
-        <div className="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-purple-400/10 blur-3xl"></div>
-      </div>
-      
+    <div className="min-h-screen flex items-center justify-center bg-[#f0ebe6] text-[#181818] px-4 py-12 sm:px-6 lg:px-8 relative">
       <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Welcome back
+          <span className="text-xs font-mono uppercase tracking-[0.25em] text-[#7c7c7c] block mb-2">
+            [ PATRON PORTAL // IDENTIFICATION ]
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight uppercase text-[#181818]">
+            Sign In to Atelier
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your account to continue
+          <p className="mt-2 text-xs text-[#4f4742] font-mono">
+            Enter your patron credentials to access saved objects and dispatch orders.
           </p>
         </div>
         
-        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 transition-all animate-in fade-in-50 zoom-in-95 duration-300">
+        <div className="bg-[#e2dacf]/45 backdrop-blur-sm p-8 rounded-[28px] shadow-sm border border-[#181818]/15 transition-all">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label 
@@ -351,15 +337,15 @@ export default function LoginPage() {
               <Button 
                 type="submit" 
                 disabled={loading}
-                className="w-full h-11 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-full bg-[#181818] hover:bg-[#38322c] text-[#f0ebe6] text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all"
               >
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Signing in...
+                    <span>Signing in...</span>
                   </>
                 ) : (
-                  "Sign in"
+                  <span>Sign In</span>
                 )}
               </Button>
             </ClickSpark>
@@ -368,20 +354,20 @@ export default function LoginPage() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
+                <div className="w-full border-t border-[#181818]/15" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <div className="relative flex justify-center text-xs font-mono uppercase tracking-wider">
+                <span className="px-3 bg-[#e2dacf] text-[#7c7c7c]">Or continue with</span>
               </div>
             </div>
 
-            <p className="text-center text-xs text-gray-500 mt-3 mb-2">
-              Sign in with your personal Google account
+            <p className="text-center text-xs text-[#7c7c7c] font-mono mt-3 mb-3">
+              Direct OAuth authentication
             </p>
 
             {/* Google sign in button with ClickSpark */}
             <ClickSpark
-              sparkColor="#ef4444"
+              sparkColor="#181818"
               sparkSize={10}
               sparkRadius={15}
               sparkCount={8}
@@ -392,7 +378,7 @@ export default function LoginPage() {
                 variant="outline"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
-                className="w-full h-11 bg-white hover:bg-gray-50 text-gray-800 flex items-center justify-center gap-2 border-gray-200"
+                className="w-full h-12 rounded-full bg-white/70 hover:bg-white text-[#181818] text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 border border-[#181818]/20 transition-all"
               >
                 {googleLoading ? (
                   <>
@@ -434,6 +420,52 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
+
+          {/* Admin & Staff Portal Option */}
+          <div className="mt-6 pt-5 border-t border-[#181818]/15">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#181818]/[0.04] border border-[#181818]/10 hover:border-[#181818]/25 hover:bg-[#181818]/[0.07] transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#181818] text-[#f0ebe6] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#181818]">
+                      Admin Portal
+                    </span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#181818] text-[#f0ebe6] font-mono font-medium">
+                      {isAdmin ? "ACTIVE" : "STAFF"}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#7c7c7c]">
+                    Management console & controls
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[#181818] hover:bg-[#38322c] text-[#f0ebe6] text-[10px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 shrink-0"
+              >
+                <ShieldCheck className="h-3 w-3" />
+                <span>Admin</span>
+              </Link>
+            </div>
+
+            {/* Quick Demo Credentials Helper */}
+            <div className="mt-2.5 flex items-center justify-between text-[11px] text-[#7c7c7c] px-1">
+              <span>Admin account:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail("nextshopp0904@gmail.com")
+                  setPassword("admin123")
+                }}
+                className="text-[#181818] font-semibold hover:underline cursor-pointer"
+              >
+                Fill nextshopp0904@gmail.com
+              </button>
+            </div>
+          </div>
         </div>
         
         {/* 2025 badges */}
@@ -444,5 +476,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#f0ebe6]">
+          <div className="w-8 h-8 border-4 border-[#181818] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   )
 }

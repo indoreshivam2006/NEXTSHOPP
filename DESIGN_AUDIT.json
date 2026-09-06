@@ -1,0 +1,231 @@
+{
+  "reference_site": {
+    "url": "https://arcsphere-studio.framer.website/",
+    "title": "ArcSphere Studio — Interior & Architecture Website Template",
+    "theme": "Minimalist luxury, high-end architectural editorial aesthetic",
+    "published_platform": "Framer"
+  },
+  "design_tokens": {
+    "colors": {
+      "background_primary": "#f0ebe6",
+      "background_secondary": "#e2dacf",
+      "background_tertiary": "#efede9",
+      "surface_dark": "#181818",
+      "surface_dark_elevated": "#222222",
+      "surface_card_dark": "#121212",
+      "text_primary": "#181818",
+      "text_secondary": "#4f4742",
+      "text_muted": "#7c7c7c",
+      "text_subtle": "#a9a9a9",
+      "text_light_primary": "#ffffff",
+      "text_light_secondary": "rgba(239, 237, 233, 0.7)",
+      "border_light": "rgba(24, 24, 24, 0.1)",
+      "border_medium": "rgba(24, 24, 24, 0.3)",
+      "border_dark": "#38322c",
+      "border_divider": "#cacac8",
+      "accent_warm": "#544c45",
+      "badge_bg": "rgba(24, 24, 24, 0.06)",
+      "button_primary_bg": "#181818",
+      "button_primary_text": "#f0ebe6",
+      "button_primary_hover_bg": "#38322c",
+      "button_secondary_bg": "transparent",
+      "button_secondary_border": "rgba(24, 24, 24, 0.3)",
+      "button_secondary_text": "#181818",
+      "button_secondary_hover_bg": "#181818",
+      "button_secondary_hover_text": "#ffffff"
+    },
+    "typography": {
+      "font_families": {
+        "display": "'Inter Display', 'General Sans', sans-serif",
+        "sans": "'Inter', 'Switzer', sans-serif"
+      },
+      "scale": {
+        "hero_title": {
+          "font_size_desktop": "64px",
+          "font_size_tablet": "48px",
+          "font_size_mobile": "36px",
+          "line_height": "1.08",
+          "letter_spacing": "-0.03em",
+          "font_weight": "600",
+          "text_transform": "none"
+        },
+        "section_title": {
+          "font_size_desktop": "38px",
+          "font_size_tablet": "30px",
+          "font_size_mobile": "24px",
+          "line_height": "1.15",
+          "letter_spacing": "0.06em",
+          "font_weight": "700",
+          "text_transform": "uppercase"
+        },
+        "card_title": {
+          "font_size_desktop": "22px",
+          "font_size_tablet": "19px",
+          "font_size_mobile": "17px",
+          "line_height": "1.25",
+          "letter_spacing": "-0.01em",
+          "font_weight": "600"
+        },
+        "body_large": {
+          "font_size": "17px",
+          "line_height": "1.6",
+          "font_weight": "400",
+          "color": "#4f4742"
+        },
+        "body_regular": {
+          "font_size": "15px",
+          "line_height": "1.6",
+          "font_weight": "400",
+          "color": "#4f4742"
+        },
+        "caption": {
+          "font_size": "13px",
+          "line_height": "1.5",
+          "font_weight": "400",
+          "color": "#7c7c7c"
+        },
+        "kicker_label": {
+          "font_size": "12px",
+          "line_height": "1.2",
+          "letter_spacing": "0.12em",
+          "font_weight": "600",
+          "text_transform": "uppercase",
+          "color": "#7c7c7c"
+        },
+        "button": {
+          "font_size": "13px",
+          "line_height": "1",
+          "letter_spacing": "0.08em",
+          "font_weight": "600",
+          "text_transform": "uppercase"
+        }
+      }
+    },
+    "spacing": {
+      "grid_base": "4px",
+      "section_padding_y_desktop": "100px",
+      "section_padding_y_tablet": "72px",
+      "section_padding_y_mobile": "48px",
+      "container_padding_x_desktop": "48px",
+      "container_padding_x_mobile": "20px",
+      "gap_xs": "8px",
+      "gap_sm": "16px",
+      "gap_md": "24px",
+      "gap_lg": "36px",
+      "gap_xl": "48px",
+      "gap_2xl": "64px"
+    },
+    "border_radius": {
+      "none": "0px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "24px",
+      "pill": "9999px"
+    },
+    "shadows": {
+      "card_soft": "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
+      "drawer": "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+    },
+    "motion": {
+      "transition_fast": "150ms cubic-bezier(0.16, 1, 0.3, 1)",
+      "transition_base": "300ms cubic-bezier(0.16, 1, 0.3, 1)",
+      "transition_slow": "500ms cubic-bezier(0.16, 1, 0.3, 1)",
+      "image_zoom_hover": "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+      "drawer_slide": "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
+    },
+    "layout": {
+      "max_width_container": "1440px",
+      "grid_columns_desktop": 12,
+      "grid_columns_tablet": 8,
+      "grid_columns_mobile": 4
+    },
+    "iconography": {
+      "style": "minimal_outline",
+      "stroke_width": 1.5,
+      "size_scale": {
+        "sm": "16px",
+        "md": "20px",
+        "lg": "24px"
+      }
+    },
+    "imagery": {
+      "style": "architectural, high texture, warm matte grade",
+      "aspect_ratios": {
+        "hero": "16/9 or 21/9",
+        "card_wide": "16/10",
+        "card_square": "1/1",
+        "card_tall": "4/5"
+      },
+      "border_radius": "20px"
+    }
+  },
+  "page_anatomy_and_sections": [
+    {
+      "id": "header",
+      "component": "ArcSphereHeader",
+      "type": "navigation",
+      "pattern": "Sticky translucent beige bar with left logo, right 2-line minimalist hamburger that triggers full-screen drawer with large typography navigation links, search, cart, and action CTA."
+    },
+    {
+      "id": "hero",
+      "component": "ArcSphereHero",
+      "type": "hero_editorial",
+      "pattern": "Full-width curated interior/product visual canvas with large typography 'Where Architecture Meets Experience', subtext paragraph, and dual pill action buttons."
+    },
+    {
+      "id": "brand_intro",
+      "component": "ArcSpherePhilosophy",
+      "type": "story_and_craftsmanship",
+      "pattern": "Asymmetrical 2-column layout: Large uppercase headline 'DESIGNING TIMELESS SPACES WITH PURPOSE' alongside descriptive editorial copy and featured rounded photo."
+    },
+    {
+      "id": "stats_ticker",
+      "component": "ArcSphereStatsMarquee",
+      "type": "marquee_ticker",
+      "pattern": "Horizontal repeating badge ribbon with metrics (Award Winning Designs | 100% Satisfaction | 150+ Curated Products | Verified Quality)."
+    },
+    {
+      "id": "featured_showcase",
+      "component": "ArcSphereProductShowcase",
+      "type": "portfolio_grid",
+      "pattern": "Large image cards with top tag, title, price/meta, and ↗ hover indicator, linking to details with quick purchase controls."
+    },
+    {
+      "id": "services_accordion",
+      "component": "ArcSphereCategoryList",
+      "type": "services_list",
+      "pattern": "Horizontal bordered list with sequential numbering (01, 02, 03...), category/service name, summary, and hover expansion."
+    },
+    {
+      "id": "expertise_cards",
+      "component": "ArcSphereExpertiseGrid",
+      "type": "two_column_cards",
+      "pattern": "Split 50/50 visual cards with rounded corners (20px) featuring overlay typography for specialized collections."
+    },
+    {
+      "id": "process_steps",
+      "component": "ArcSphereProcessSteps",
+      "type": "numbered_steps_grid",
+      "pattern": "2x2 grid with minimalist icon badges, step numbers (01 DISCOVERY, 02 CONCEPT...), and clear descriptions."
+    },
+    {
+      "id": "testimonials",
+      "component": "ArcSphereTestimonials",
+      "type": "quote_editorial",
+      "pattern": "Centred high-impact editorial quote block with client/architect attribution and star rating."
+    },
+    {
+      "id": "inquiry_cta",
+      "component": "ArcSphereContactCta",
+      "type": "cta_form",
+      "pattern": "Minimalist inquiry/newsletter card with custom styled underline inputs and pill submission button."
+    },
+    {
+      "id": "footer",
+      "component": "ArcSphereFooter",
+      "type": "footer_editorial",
+      "pattern": "Multi-column layout with studio contact details, sitemap links, social links, legal notices, and large animated brand watermark marquee."
+    }
+  ]
+}

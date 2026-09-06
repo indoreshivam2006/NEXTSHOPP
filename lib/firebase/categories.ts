@@ -15,37 +15,37 @@ const mockCategories: Category[] = [
     id: "1",
     name: "Clothing",
     slug: "clothing",
-    image: "/cloth_bg.jpg?height=200&width=200",
+    image: "/cloth_bg.jpg",
   },
   {
     id: "2",
     name: "Footwear",
     slug: "footwear",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "/placeholder.svg",
   },
   {
     id: "3",
     name: "Accessories",
     slug: "accessories",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "/placeholder.svg",
   },
   {
     id: "4",
     name: "Electronics",
     slug: "electronics",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "/placeholder.svg",
   },
   {
     id: "5",
     name: "Home Appliances",
     slug: "home",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "/placeholder.svg",
   },
   {
     id: "6",
     name: "Beauty",
     slug: "beauty",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "/placeholder.svg",
   },
 ]
 

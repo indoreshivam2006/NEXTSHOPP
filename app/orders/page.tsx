@@ -5,13 +5,13 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
-import { getOrdersByUser } from "@/lib/firebase/orders"
+import { getOrdersByUser, Order } from "@/lib/firebase/orders"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Package, ChevronRight } from "lucide-react"
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const { user } = useAuth()
   const router = useRouter()

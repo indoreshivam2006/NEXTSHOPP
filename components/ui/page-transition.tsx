@@ -22,7 +22,8 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
             y: 0, 
             duration: 0.8, 
             ease: "power2.out",
-            delay: 0.2 
+            delay: 0.2,
+            clearProps: "transform"
           }
         );
       }
@@ -46,7 +47,8 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           y: 0, 
           duration: 0.8, 
           ease: "power2.out",
-          delay: 0.1 
+          delay: 0.1,
+          clearProps: "transform"
         });
       }
     });

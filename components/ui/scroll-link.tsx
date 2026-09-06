@@ -11,6 +11,7 @@ interface ScrollLinkProps {
   duration?: number;
   offset?: number;
   withReveal?: boolean;
+  onClick?: () => void;
 }
 
 export function ScrollLink({
@@ -20,10 +21,14 @@ export function ScrollLink({
   duration = 1,
   offset = 0,
   withReveal = false,
+  onClick,
 }: ScrollLinkProps) {
   const { scrollTo, scrollTop } = useSmoothScrollContext();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) {
+      onClick();
+    }
     // Only prevent default if it's a hash link
     if (href.startsWith("#")) {
       e.preventDefault();

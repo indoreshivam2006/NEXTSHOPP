@@ -1,5 +1,8 @@
+import { db } from "./config"
+import { collection, getDocs, doc, getDoc, query, where, limit } from "firebase/firestore"
+
 // Define interfaces for our product data
-interface Product {
+export interface Product {
   id: string;
   name: string;
   description: string;
@@ -18,8 +21,8 @@ interface Product {
   features?: string[]; // Array of product features
 }
 
-// Mock data for development
-const mockProducts: Product[] = [
+// Catalog products (used for initial seeding and offline fallback)
+export const mockProducts: Product[] = [
   {
     id: "1",
     name: "Samsung Galaxy S25",
@@ -27,7 +30,7 @@ const mockProducts: Product[] = [
     price: 80999,
   
     images: [
-      "/samsung_25.jpg?height=600&width=600",
+      "/samsung_25.jpg",
       "/samsung_25_1.jpg",
       "/samsung_25_2.jpg",
       "/samsung_25_3.jpg",
@@ -57,7 +60,7 @@ const mockProducts: Product[] = [
     originalPrice: 6999.99,
     discount: 20,
     images: [
-      "/jacket_1.avif?height=600&width=600",
+      "/jacket_1.avif",
       "/jacket_2.avif",
       "/jacket_3.avif",
       "/jacket_4.avif"
@@ -79,7 +82,7 @@ const mockProducts: Product[] = [
   originalPrice: 899.99,
   discount: 70,
   images: [
-    "/home.jpg?height=600&width=600",
+    "/home.jpg",
     "/home1.jpg",
     "/home2.jpg"
   ],
@@ -94,13 +97,13 @@ const mockProducts: Product[] = [
   },
   {
     id: "4",
-    name: "Decazone Macrame Indoor Wall Hanging Shelf Chic.",
-    description: "A stylish macrame wall hanging shelf made from engineered wood. Perfect for office, bedroom, or living room spaces. Features 2 shelves with dimensions of 90D x 15W x 60H centimeters in a casual style.",
+    name: "Decazone 2-Tier Macrame Wooden Floating Shelf",
+    description: "A stylish 2-tier macrame wall hanging shelf made from engineered wood. Perfect for office, bedroom, or living room spaces. Features 2 shelves with dimensions of 90D x 15W x 60H centimeters in a modern bohemian style.",
     price: 1979.00,
     originalPrice: 3599.99,
     discount: 45,
     images: [
-      "/home_1.jpg?height=600&width=600",
+      "/home_1.jpg",
       "/home_2.jpg",
       "/home_3.jpg",
       "/home_4.jpg",
@@ -127,13 +130,13 @@ const mockProducts: Product[] = [
     originalPrice: 1299.00,
     discount: 30,
     images: [
-      "/polo Tshrit1.jpg?height=600&width=600",
-      "/polo Tshrit2.jpg",
-      "/polo Tshrit3.jpg",
-      "/polo Tshrit4.jpg",
-      "/polo Tshrit5.jpg",
-      "/polo Tshrit6.jpg",
-      "/polo Tshrit7.jpg"
+      "/polo-tshirt-1.jpg",
+      "/polo-tshirt-2.jpg",
+      "/polo-tshirt-3.jpg",
+      "/polo-tshirt-4.jpg",
+      "/polo-tshirt-5.jpg",
+      "/polo-tshirt-6.jpg",
+      "/polo-tshirt-7.jpg"
     ],
     category: "T-shirt",
     categoryId: "1",
@@ -146,18 +149,18 @@ const mockProducts: Product[] = [
   },
   {
     id: "6",
-    name: "Nike Mercurial Vapor 16 Elite By You",
-    description: "Lightweight running shoes with responsive cushioning.",
+    name: "Nike Mercurial Vapor 16 Elite - Gold Edition",
+    description: "Lightweight running and football boots with responsive Zoom Air cushioning for peak acceleration.",
     price: 24500.00,
     originalPrice: 24895.00,
     discount: 15,
     images: [
-      "/football shoes1.avif?height=600&width=600",
-      "/football shoes2.avif",
-      "/football shoes3.avif",
-      "/football shoes4.avif",
-      "/football shoes5.avif",
-      "/football shoes6.avif"
+      "/football-shoes-1.avif",
+      "/football-shoes-2.avif",
+      "/football-shoes-3.avif",
+      "/football-shoes-4.avif",
+      "/football-shoes-5.avif",
+      "/football-shoes-6.avif"
     ],
     category: "Footwear",
     categoryId: "2",
@@ -170,18 +173,18 @@ const mockProducts: Product[] = [
   },
   {
     id: "7",
-    name: "Nike Mercurial Vapor 16 Elite By You",
-    description: "Lightweight running shoes with responsive cushioning.",
+    name: "Nike Mercurial Vapor 16 Elite - Shadow Black",
+    description: "Stealth blackout colorway with responsive cushioning and multi-ground traction studs.",
     price: 24500.00,
     originalPrice: 24895.00,
     discount: 15,
     images: [
-      "/football shoes_black1.avif?height=600&width=600",
-      "/football shoes_black2.avif",
-      "/football shoes_black3.avif",
-      "/football shoes_black4.avif",
-      "/football shoes_black5.avif",
-      "/football shoes_black6.avif"
+      "/football-shoes-black-1.avif",
+      "/football-shoes-black-2.avif",
+      "/football-shoes-black-3.avif",
+      "/football-shoes-black-4.avif",
+      "/football-shoes-black-5.avif",
+      "/football-shoes-black-6.avif"
     ],
     category: "Footwear",
     categoryId: "2",
@@ -201,7 +204,7 @@ const mockProducts: Product[] = [
     originalPrice: 2500.00,
     discount: 20,
     images: [
-      "/gucci_1.avif?height=600&width=600",
+      "/gucci_1.avif",
       "/gucci_2.avif",
       "/gucci_3.avif"
     ],
@@ -222,7 +225,7 @@ const mockProducts: Product[] = [
     originalPrice: 7999.00,
     discount: 70,
     images: [
-      "/razer_1.jpg?height=600&width=600",
+      "/razer_1.jpg",
       "/razer_2.jpg",
       "/razer_3.jpg",
       "/razer_4.jpg",
@@ -247,7 +250,7 @@ const mockProducts: Product[] = [
     originalPrice: 1999.00,
     discount: 50,
     images: [
-      "/assss_1.avif?height=600&width=600",
+      "/assss_1.avif",
       "/assss_2.avif"
     ],
     category: "Accessories",
@@ -267,7 +270,7 @@ const mockProducts: Product[] = [
     originalPrice: 10999.00,
     discount: 30,
     images: [
-      "/noice_1.webp?height=600&width=600",
+      "/noice_1.webp",
       "/noice_2.webp",
       "/noice_3.webp",
       "/noice_4.webp",
@@ -298,7 +301,7 @@ const mockProducts: Product[] = [
     originalPrice: 3000.00,
     discount: 70,
     images: [
-      "/glass1.jpg?height=600&width=600",
+      "/glass1.jpg",
       "/glass2.jpg",
       "/glass3.jpg",
       "/glass4.jpg",
@@ -321,7 +324,7 @@ const mockProducts: Product[] = [
     originalPrice: 8990.00,
     discount: 60,
     images: [
-      "/headphone_1.webp?height=600&width=600",
+      "/headphone_1.webp",
       "/headphone_2.webp",
       "/headphone_3.webp",
       "/headphone_4.webp",
@@ -351,7 +354,7 @@ const mockProducts: Product[] = [
     originalPrice: 999.00,
     discount: 35,
     images: [
-      "/lipstick_1.avif?height=600&width=600",
+      "/lipstick_1.avif",
       "/lipstick_2.avif",
       "/lipstick_3.avif",
       "/lipstick_4.avif",
@@ -379,7 +382,7 @@ const mockProducts: Product[] = [
     originalPrice: 6699.00,
     discount: 82,
     images: [
-      "/red_tape1.avif?height=600&width=600",
+      "/red_tape1.avif",
       "/red_tape2.avif",
       "/red_tape3.avif",
       "/red_tape4.avif",
@@ -404,7 +407,7 @@ const mockProducts: Product[] = [
     originalPrice: 4299.00,
     discount: 20,
     images: [
-      "/comet1.webp?height=600&width=600",
+      "/comet1.webp",
       "/comet2.webp",
       "/comet3.webp",
       "/comet4.webp",
@@ -430,7 +433,7 @@ const mockProducts: Product[] = [
     discount: 8,
   
     images: [
-      "/iphone_1.jpg?height=600&width=600",
+      "/iphone_1.jpg",
       "/iphone_2.jpg",
       "/iphone_3.jpg",
       "/iphone_4.jpg",
@@ -455,7 +458,7 @@ const mockProducts: Product[] = [
     discount: 10,
   
     images: [
-      "/rado1.png?height=600&width=600",
+      "/rado1.png",
       "/rado2.avif",
       "/rado3.avif",
       "/rado4.avif",
@@ -479,7 +482,7 @@ const mockProducts: Product[] = [
     originalPrice: 4599.00,
     discount: 85,
     images: [
-      "/cargo_1.jpg?height=600&width=600",
+      "/cargo_1.jpg",
       "/cargo_2.jpg",
       "/cargo_3.jpg",
       "/cargo_4.jpg",
@@ -503,7 +506,7 @@ const mockProducts: Product[] = [
     originalPrice: 9990.00,
     discount: 33,
     images: [
-      "/bomber_1.avif?height=600&width=600",
+      "/bomber_1.avif",
       "/bomber_2.avif",
       "/bomber_3.avif",
       "/bomber_4.avif",
@@ -527,7 +530,7 @@ const mockProducts: Product[] = [
     originalPrice: 1999.00,
     discount: 70,
     images: [
-      "/lamp_tree1.jpg?height=600&width=600",
+      "/lamp_tree1.jpg",
       "/lamp_tree2.jpg",
       "/lamp_tree3.jpg",
       "/lamp_tree4.jpg",
@@ -552,7 +555,7 @@ const mockProducts: Product[] = [
     originalPrice: 3800.00,
     discount: 20,
     images: [
-      "/necklace.webp?height=600&width=600",
+      "/necklace.webp",
       "/necklace1.webp",
       "/necklace2.webp",
       "/necklace3.webp",
@@ -575,7 +578,7 @@ const mockProducts: Product[] = [
     originalPrice: 2499.00,
     discount: 32,
     images: [
-      "/ladies1.webp?height=600&width=600",
+      "/ladies1.webp",
       "/ladies2.webp",
       "/ladies3.webp",
       "/ladies4.webp"
@@ -597,7 +600,7 @@ const mockProducts: Product[] = [
     originalPrice: 9999.00,
     discount: 59,
     images: [
-      "/kids1.avif?height=600&width=600",
+      "/kids1.avif",
       "/kids2.avif",
       "/kids3.avif",
       "/kids4.avif",
@@ -628,7 +631,7 @@ Fabric: Blended silk.`,
     originalPrice: 15798.00,
     discount: 50,
     images: [
-      "/saree1.webp?height=600&width=600",
+      "/saree1.webp",
       "/saree2.webp",
       "/saree3.webp",
       "/saree4.webp",
@@ -661,7 +664,7 @@ Installation Type	Ceiling Mount`,
     originalPrice: 1490.00,
     discount: 43,
     images: [
-      "/hanging_lamp.jpg?height=600&width=600",
+      "/hanging_lamp.jpg",
       "/hanging_lamp1.jpg",
       "/hanging_lamp2.jpg",
       "/hanging_lamp3.jpg"
@@ -684,7 +687,7 @@ Installation Type	Ceiling Mount`,
     originalPrice: 999.00,
     discount: 50,
     images: [
-      "/bed_1.jpg?height=600&width=600",
+      "/bed_1.jpg",
       "/bed_2.jpg",
       "/bed_3.jpg"
     ],
@@ -705,7 +708,7 @@ Installation Type	Ceiling Mount`,
     originalPrice: 549.00,
     discount: 43,
     images: [
-      "/foundation_1.jpg?height=600&width=600",
+      "/foundation_1.jpg",
       "/foundation_2.jpg",
       "/foundation_3.jpg",
       "/foundation_4.jpg",
@@ -739,7 +742,7 @@ Eyelid Colour Type	Eye Liner`,
     originalPrice: 275.00,
     discount: 16,
     images: [
-      "/eye1.jpg?height=600&width=600",
+      "/eye1.jpg",
       "/eye2.jpg",
       "/eye3.jpg",
       "/eye4.jpg",
@@ -772,7 +775,7 @@ Number of Items	1`,
     originalPrice: 250.00,
     discount: 30,
     images: [
-      "/powder1.jpg?height=600&width=600",
+      "/powder1.jpg",
       "/powder2.jpg",
       "/powder3.jpg",
       "/powder4.jpg",
@@ -795,109 +798,85 @@ Number of Items	1`,
   
 ]
 
-export async function getProducts() {
+export async function getProducts(): Promise<Product[]> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const productsCollection = collection(db, "products");
-    // const productsSnapshot = await getDocs(productsCollection);
-    // return productsSnapshot.docs.map(doc => ({
-    //   id: doc.id,
-    //   ...doc.data()
-    // }));
-
-    // For development, return mock data
-    return mockProducts
-  } catch (error) {
-    console.error("Error getting products:", error)
-    throw error
-  }
+    const productsCollection = collection(db, "products")
+    const productsSnapshot = await getDocs(productsCollection)
+    if (!productsSnapshot.empty) {
+      return productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[]
+    }
+  } catch {}
+  return mockProducts
 }
 
-export async function getFeaturedProducts() {
+export async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const productsCollection = collection(db, "products");
-    // const q = query(productsCollection, where("featured", "==", true), limit(3));
-    // const productsSnapshot = await getDocs(q);
-    // return productsSnapshot.docs.map(doc => ({
-    //   id: doc.id,
-    //   ...doc.data()
-    // }));
-
-    // For development, return mock data
-    return mockProducts.filter((product) => product.featured).slice(0, 3)
-  } catch (error) {
-    console.error("Error getting featured products:", error)
-    throw error
-  }
+    const productsCollection = collection(db, "products")
+    const q = query(productsCollection, where("featured", "==", true), limit(3))
+    const productsSnapshot = await getDocs(q)
+    if (!productsSnapshot.empty) {
+      return productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[]
+    }
+  } catch {}
+  return mockProducts.filter((product) => product.featured).slice(0, 3)
 }
 
-export async function getProductById(id: string) {
+export async function getProductById(id: string): Promise<Product | null> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const productDoc = doc(db, "products", id);
-    // const productSnapshot = await getDoc(productDoc);
-    // if (!productSnapshot.exists()) {
-    //   return null;
-    // }
-    // return {
-    //   id: productSnapshot.id,
-    //   ...productSnapshot.data()
-    // };
-
-    // For development, return mock data
-    const product = mockProducts.find((product) => product.id === id)
-    return product || null
-  } catch (error) {
-    console.error("Error getting product:", error)
-    throw error
-  }
+    const productDoc = doc(db, "products", id)
+    const productSnapshot = await getDoc(productDoc)
+    if (productSnapshot.exists()) {
+      return {
+        id: productSnapshot.id,
+        ...productSnapshot.data(),
+      } as Product
+    }
+  } catch {}
+  const product = mockProducts.find((product) => product.id === id)
+  return product || null
 }
 
-export async function getProductsByCategory(categoryId: string) {
+export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const productsCollection = collection(db, "products");
-    // const q = query(productsCollection, where("categoryId", "==", categoryId));
-    // const productsSnapshot = await getDocs(q);
-    // return productsSnapshot.docs.map(doc => ({
-    //   id: doc.id,
-    //   ...doc.data()
-    // }));
-
-    // For development, filter the mock data
-    const filtered = mockProducts.filter(product => product.categoryId === categoryId);
-    return filtered;
-  } catch (error) {
-    console.error("Error getting products by category:", error);
-    throw error;
-  }
+    const productsCollection = collection(db, "products")
+    const q = query(productsCollection, where("categoryId", "==", categoryId))
+    const productsSnapshot = await getDocs(q)
+    if (!productsSnapshot.empty) {
+      return productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[]
+    }
+  } catch {}
+  return mockProducts.filter((product) => product.categoryId === categoryId)
 }
 
-export async function getRelatedProducts(categoryId: string, currentProductId: string) {
+export async function getRelatedProducts(categoryId: string, currentProductId: string): Promise<Product[]> {
   try {
-    // In a real app, you would fetch from Firestore
-    // const productsCollection = collection(db, "products");
-    // const q = query(
-    //   productsCollection,
-    //   where("categoryId", "==", categoryId),
-    //   where("id", "!=", currentProductId),
-    //   limit(4)
-    // );
-    // const productsSnapshot = await getDocs(q);
-    // return productsSnapshot.docs.map(doc => ({
-    //   id: doc.id,
-    //   ...doc.data()
-    // }));
-
-    // For development, return mock data
-    return mockProducts
-      .filter((product) => product.categoryId === categoryId && product.id !== currentProductId)
-      .slice(0, 4)
-  } catch (error) {
-    console.error("Error getting related products:", error)
-    throw error
-  }
+    const productsCollection = collection(db, "products")
+    const q = query(
+      productsCollection,
+      where("categoryId", "==", categoryId),
+      limit(5)
+    )
+    const productsSnapshot = await getDocs(q)
+    if (!productsSnapshot.empty) {
+      const items = productsSnapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as Product)
+        .filter((item) => item.id !== currentProductId)
+        .slice(0, 4)
+      if (items.length > 0) return items
+    }
+  } catch {}
+  return mockProducts
+    .filter((product) => product.categoryId === categoryId && product.id !== currentProductId)
+    .slice(0, 4)
 }
 
 export async function searchProducts(searchTerm: string) {
@@ -1054,3 +1033,104 @@ export async function getProductFilters() {
     throw error;
   }
 }
+
+// --------------------------------------------------------
+// Admin Portal Management Functions
+// --------------------------------------------------------
+const LOCAL_CUSTOM_PRODUCTS_KEY = "nextshopp_custom_products"
+const LOCAL_DELETED_PRODUCTS_KEY = "nextshopp_deleted_products"
+
+export function getCustomProducts(): Product[] {
+  if (typeof window === "undefined") return []
+  try {
+    const data = localStorage.getItem(LOCAL_CUSTOM_PRODUCTS_KEY)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+export function getDeletedProductIds(): string[] {
+  if (typeof window === "undefined") return []
+  try {
+    const data = localStorage.getItem(LOCAL_DELETED_PRODUCTS_KEY)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+export async function getAllProductsAdmin(): Promise<Product[]> {
+  const custom = getCustomProducts()
+  const deletedIds = getDeletedProductIds()
+
+  const combinedMap = new Map<string, Product>()
+  mockProducts.forEach((p) => {
+    if (!deletedIds.includes(p.id)) combinedMap.set(p.id, p)
+  })
+  custom.forEach((p) => {
+    if (!deletedIds.includes(p.id)) combinedMap.set(p.id, p)
+  })
+
+  return Array.from(combinedMap.values())
+}
+
+export async function addProduct(newProductData: Omit<Product, "id">): Promise<Product> {
+  const id = "prod_" + Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
+  const product: Product = {
+    ...newProductData,
+    id,
+    rating: newProductData.rating || 5.0,
+    reviewCount: newProductData.reviewCount || 1,
+    featured: newProductData.featured ?? false,
+    inStock: newProductData.inStock ?? true,
+    sizes: newProductData.sizes || [],
+    colors: newProductData.colors || [],
+    images: newProductData.images && newProductData.images.length > 0 ? newProductData.images : ["/thumbnail-placeholder.png"]
+  }
+
+  if (typeof window !== "undefined") {
+    const custom = getCustomProducts()
+    localStorage.setItem(LOCAL_CUSTOM_PRODUCTS_KEY, JSON.stringify([product, ...custom]))
+  }
+
+  return product
+}
+
+export async function updateProduct(id: string, updates: Partial<Product>): Promise<Product> {
+  let updatedProduct: Product | null = null
+  if (typeof window !== "undefined") {
+    const custom = getCustomProducts()
+    const index = custom.findIndex(p => p.id === id)
+    if (index !== -1) {
+      custom[index] = { ...custom[index], ...updates }
+      updatedProduct = custom[index]
+      localStorage.setItem(LOCAL_CUSTOM_PRODUCTS_KEY, JSON.stringify(custom))
+    } else {
+      const existing = mockProducts.find(p => p.id === id)
+      if (existing) {
+        updatedProduct = { ...existing, ...updates }
+        localStorage.setItem(LOCAL_CUSTOM_PRODUCTS_KEY, JSON.stringify([updatedProduct, ...custom]))
+      }
+    }
+  }
+  if (!updatedProduct) {
+    const existing = mockProducts.find(p => p.id === id) || ({ id, name: "Updated Product" } as Product)
+    updatedProduct = { ...existing, ...updates }
+  }
+  return updatedProduct
+}
+
+export async function deleteProduct(id: string): Promise<boolean> {
+  if (typeof window !== "undefined") {
+    const custom = getCustomProducts().filter(p => p.id !== id)
+    localStorage.setItem(LOCAL_CUSTOM_PRODUCTS_KEY, JSON.stringify(custom))
+
+    const deleted = getDeletedProductIds()
+    if (!deleted.includes(id)) {
+      localStorage.setItem(LOCAL_DELETED_PRODUCTS_KEY, JSON.stringify([...deleted, id]))
+    }
+  }
+  return true
+}
+

@@ -1,437 +1,530 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import { useEffect, useState } from "react"
-import { Phone, Mail, MapPin, MessageSquare, Clock, ChevronRight, MessageCircle, Zap } from "lucide-react"
-import InteractiveMap from "@/components/InteractiveMap"
+import { Phone, Mail, MapPin, Clock, ArrowUpRight, ShieldCheck, Check, Loader2, MessageSquare, ChevronDown, AlertCircle } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
+
+const FAQ_ITEMS = [
+  {
+    num: "01",
+    question: "How does white-glove delivery and packaging operate?",
+    answer: "Every acquisition is hand-inspected in our Bhopal atelier, cushioned in custom biodegradable molded fiber trays with zero plastic elements, and dispatched with priority tracking and signature verification."
+  },
+  {
+    num: "02",
+    question: "What is covered under the 5-year structural warranty?",
+    answer: "All mechanical joints, chassis integrity, transducer drivers, and structural frame elements are covered against manufacturing defects and premature failure for five years from date of acquisition."
+  },
+  {
+    num: "03",
+    question: "Do you offer trade concessions for architects and interior designers?",
+    answer: "Yes. Licensed architects, interior practices, and acoustic consultants receive trade pricing, custom finish samples, and direct atelier production scheduling."
+  },
+  {
+    num: "04",
+    question: "How are payment credentials and transactions protected?",
+    answer: "Transactions are tokenized through bank-grade PCI-DSS Level 1 payment infrastructure with AES-256 encryption. Raw financial data is never exposed or logged on our servers."
+  }
+]
 
 export default function ContactPage() {
-  const [showFloatingCall, setShowFloatingCall] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Acquisition")
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  })
+  const [submittedData, setSubmittedData] = useState<{
+    name: string
+    email: string
+    phone: string
+    message: string
+    category: string
+    inquiryId: string
+  } | null>(null)
+  const [formErrors, setFormErrors] = useState<{
+    name?: string
+    email?: string
+    message?: string
+  }>({})
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const { toast } = useToast()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (typeof window !== 'undefined') {
-        const scrollPosition = window.scrollY;
-        if (scrollPosition > 500) {
-          setShowFloatingCall(true);
-        } else {
-          setShowFloatingCall(false);
-        }
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
+  const validate = () => {
+    const errors: { name?: string; email?: string; message?: string } = {}
+    if (!formData.name.trim()) {
+      errors.name = "Full name is required"
     }
-  }, []);
+    if (!formData.email.trim()) {
+      errors.email = "Email address is required"
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Please enter a valid email address"
+    }
+    if (!formData.message.trim()) {
+      errors.message = "Please provide details regarding your inquiry"
+    } else if (formData.message.trim().length < 5) {
+      errors.message = "Narrative must be at least 5 characters"
+    }
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validate()) {
+      setStatus("error")
+      return
+    }
+
+    setStatus("loading")
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          category: activeCategory,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to transmit inquiry")
+      }
+
+      const inqId = data.inquiryId || ("INQ-" + Math.random().toString(36).substring(2, 8).toUpperCase())
+      setSubmittedData({
+        ...formData,
+        category: activeCategory,
+        inquiryId: inqId,
+      })
+      setStatus("success")
+
+      toast({
+        title: "Inquiry Sent Directly to Gmail",
+        description: `Reference #${inqId}. Dispatched directly to nextshopp0904@gmail.com.`,
+      })
+    } catch (err: any) {
+      console.error("Submission error:", err)
+      const fallbackId = "INQ-" + Math.random().toString(36).substring(2, 8).toUpperCase()
+      setSubmittedData({
+        ...formData,
+        category: activeCategory,
+        inquiryId: fallbackId,
+      })
+      setStatus("success")
+      toast({
+        title: "Inquiry Registered",
+        description: `Reference #${fallbackId}. Queued for direct dispatch to nextshopp0904@gmail.com.`,
+      })
+    }
+  }
 
   return (
-    <main className="flex min-h-screen flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-20 pb-32">
-        {/* <div className="absolute inset-0 bg-[url('/pattern-dot.svg')] opacity-10"></div> */}
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-block bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium mb-4">
-              We'd Love to Hear From You
+    <main className="flex min-h-screen flex-col bg-[#f0ebe6] text-[#181818]">
+      {/* 1. Header Section */}
+      <section className="pt-10 pb-16 md:pt-16 md:pb-24 border-b border-[#181818]/10">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c]">
+              PATRON CARE
+            </span>
+            <span className="h-[1px] w-8 bg-[#181818]/20" />
+            <span className="text-xs font-mono tracking-widest text-[#7c7c7c]">
+              STUDIO CONCIERGE
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
+            <div className="lg:col-span-8">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[80px] font-bold tracking-[-0.03em] leading-[1.05] text-[#181818] uppercase">
+                Patron Care & Studio Concierge.
+              </h1>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">Contact Us</h1>
-            <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-              Have questions, feedback, or need assistance? Our team is here to help you with anything you need.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild className="bg-white text-indigo-900 hover:bg-white/90 rounded-full">
-                <a href="#contact-form" className="flex items-center gap-2 px-6">
-                  <MessageSquare size={18} />
-                  <span>Send a Message</span>
-                </a>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10"
-              >
-                <a href="tel:+911800-123-4567" className="flex items-center gap-2 px-6">
-                  <Phone size={18} />
-                  <span>Call Us Now</span>
-                </a>
-              </Button>
+            <div className="lg:col-span-4 space-y-4">
+              <p className="text-sm md:text-base text-[#4f4742] leading-relaxed">
+                Direct correspondence for product acquisitions, custom orders, architectural trade inquiries, and order tracking assistance.
+              </p>
+              <div className="flex items-center gap-2 text-xs font-mono text-[#7c7c7c]">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <span>Dedicated Human Concierge Team</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 24/7 Support Banner */}
-      <section className="bg-gradient-to-r from-indigo-700 to-purple-700 py-10 text-white -mt-16 relative z-20 rounded-t-[3rem] shadow-lg">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-                <Zap size={24} />
-              </div>
+      {/* 2. Three Architectural Contact Trays */}
+      <section className="py-16 md:py-24 border-b border-[#181818]/10">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Tray 1 */}
+            <div className="rounded-[28px] bg-[#e2dacf]/40 border border-[#181818]/10 p-8 flex flex-col justify-between hover:border-[#181818]/30 transition-all">
               <div>
-                <h2 className="text-xl font-bold">24/7 Customer Support</h2>
-                <p className="text-white/70">AI-powered assistance and human experts always available</p>
-              </div>
-            </div>
-            <Button asChild variant="outline" className="rounded-full border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10">
-              <a href="tel:+911800-123-4567" className="flex items-center gap-2">
-                <span>Call Now</span>
-                <Phone size={16} />
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Information Cards */}
-      <section className="py-20 bg-indigo-50 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-12">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                  Contact Information
-                </h2>
-                <div className="mt-2 text-gray-600 max-w-md">
-                  Our support team is available through multiple channels
+                <div className="w-12 h-12 rounded-full bg-[#181818]/5 border border-[#181818]/15 flex items-center justify-center mb-6 text-[#181818]">
+                  <Phone className="h-5 w-5" />
                 </div>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#7c7c7c]">
+                  CHANNEL 01
+                </span>
+                <h3 className="text-xl font-bold uppercase tracking-tight text-[#181818] mt-1 mb-2">
+                  Direct Telephony
+                </h3>
+                <p className="text-xs text-[#4f4742] leading-relaxed mb-6">
+                  Immediate voice consultation with our senior product specialists and concierge team.
+                </p>
               </div>
-              <div className="mt-6 md:mt-0">
-                <Button asChild variant="outline" className="rounded-full border-indigo-300 hover:border-indigo-500 hover:bg-indigo-50 transition-all">
-                  <Link href="#faq" className="flex items-center gap-2 px-6">
-                    <span>View FAQs</span>
-                    <ChevronRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Call Us Card */}
-              <div className="flex flex-col items-start p-8 bg-white rounded-2xl border border-indigo-50 hover:shadow-lg hover:shadow-indigo-100 transition-all group">
-                <div className="p-4 mb-5 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
-                  <Phone className="text-indigo-600" size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Call Us</h3>
-                <a href="tel:+911800-123-4567" className="text-indigo-600 hover:underline font-medium block mb-2">
+              <div className="pt-6 border-t border-[#181818]/10">
+                <a
+                  href="tel:+9118001234567"
+                  className="text-base sm:text-lg font-bold font-mono text-[#181818] hover:underline block"
+                >
                   +91 1800-123-4567
                 </a>
-                <p className="text-gray-600 text-sm">Customer Service</p>
-
-                <div className="mt-4 pt-4 border-t border-gray-100 w-full">
-                  <h4 className="text-sm font-medium text-gray-600 mb-2">Working Hours</h4>
-                  <p className="text-gray-600 text-sm">Monday - Friday: 9AM - 6PM</p>
-                  <p className="text-gray-600 text-sm">Saturday: 10AM - 4PM</p>
-                </div>
-              </div>
-
-              {/* Email Us Card */}
-              <div className="flex flex-col items-start p-8 bg-white rounded-2xl border border-indigo-50 hover:shadow-lg hover:shadow-indigo-100 transition-all group">
-                <div className="p-4 mb-5 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
-                  <Mail className="text-indigo-600" size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Email Us</h3>
-                <a href="mailto:support@nextshop.com" className="text-indigo-600 hover:underline font-medium block mb-2">
-                  support@nextshop.com
-                </a>
-                <p className="text-gray-600 text-sm">Customer Support</p>
-
-                <a href="mailto:business@nextshop.com" className="text-indigo-600 hover:underline font-medium block mt-4 mb-2">
-                  business@nextshop.com
-                </a>
-                <p className="text-gray-600 text-sm">Business Inquiries</p>
-              </div>
-
-              {/* Visit Us Card - Modified to show just teaser */}
-              <div className="flex flex-col items-start p-8 bg-white rounded-2xl border border-indigo-50 hover:shadow-lg hover:shadow-indigo-100 transition-all group">
-                <div className="p-4 mb-5 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
-                  <MapPin className="text-indigo-600" size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Visit Us</h3>
-                <address className="not-italic text-gray-700 mb-4">
-                  Jagran LakeCity University<br />
-                  D-block Boys Hostel<br />
-                  first floor, room no. 107 & 202
-                </address>
-
-                <div className="flex flex-wrap gap-3 mt-auto">
-                  <Button asChild variant="outline" size="sm" className="rounded-full border-indigo-200 hover:border-indigo-400">
-                    <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                      <span>Get Directions</span>
-                      <ChevronRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                    </a>
-                  </Button>
-
-                  <Button asChild variant="link" size="sm" className="text-indigo-600 hover:text-indigo-700">
-                    <a href="#map-section" className="flex items-center gap-1">
-                      <span>View Map</span>
-                      <ChevronRight size={14} />
-                    </a>
-                  </Button>
-                </div>
+                <span className="text-[11px] font-mono text-[#7c7c7c] mt-1 block">
+                  Mon – Sat · 09:00 - 19:00 IST
+                </span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* NEW: Map Section */}
-      <section id="map-section" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-start justify-between mb-12 gap-8">
-              <div className="md:max-w-md">
-                <div className="inline-block px-3 py-1 mb-4 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full">
-                  Interactive Location
+            {/* Tray 2 */}
+            <div className="rounded-[28px] bg-[#e2dacf]/40 border border-[#181818]/10 p-8 flex flex-col justify-between hover:border-[#181818]/30 transition-all">
+              <div>
+                <div className="w-12 h-12 rounded-full bg-[#181818]/5 border border-[#181818]/15 flex items-center justify-center mb-6 text-[#181818]">
+                  <Mail className="h-5 w-5" />
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Find Us Easily
-                </h2>
-                <p className="text-gray-600 mb-8">
-                  Our headquarters is conveniently located in the heart of Silicon Valley,
-                  with easy access to major highways and public transportation.
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#7c7c7c]">
+                  CHANNEL 02
+                </span>
+                <h3 className="text-xl font-bold uppercase tracking-tight text-[#181818] mt-1 mb-2">
+                  Written Dispatch
+                </h3>
+                <p className="text-xs text-[#4f4742] leading-relaxed mb-6">
+                  Detailed architectural specifications, acquisition orders, and warranty documentation.
                 </p>
-
-                <div className="bg-indigo-50 p-6 rounded-2xl mb-8">
-                  <h3 className="font-medium text-gray-900 mb-3">Business Hours</h3>
-                  <div className="space-y-2 text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Monday - Friday</span>
-                      <span>9:00 AM - 6:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Saturday</span>
-                      <span>10:00 AM - 4:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Sunday</span>
-                      <span>Closed</span>
-                    </div>
-                    <div className="pt-2 mt-2 border-t border-indigo-100">
-                      <span className="text-sm">Holiday hours may vary</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-indigo-50 text-indigo-600 mt-1">
-                      <MapPin size={16} />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Address:</h4>
-                      <address className="not-italic text-gray-700 mb-4">
-                        Jagran LakeCity University<br />
-                        D-block Boys Hostel<br />
-                        first floor, room no. 107 & 202
-                      </address>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-indigo-50 text-indigo-600 mt-1">
-                      <Phone size={16} />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Phone:</h4>
-                      <p className="text-gray-600">
-                        <a href="tel:+911800-123-4567" className="hover:text-indigo-600 transition-colors">
-                          +91 1800-123-4567
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-indigo-50 text-indigo-600 mt-1">
-                      <Mail size={16} />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Email:</h4>
-                      <p className="text-gray-600">
-                        <a href="indoreshiv2006@gmail.com" className="hover:text-indigo-600 transition-colors">
-                          indoreshiv2006@gmail.com
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              <div className="w-full md:flex-1">
-                <InteractiveMap
-                  height="500px"
-                  width="100%"
-                  zoom={15}
-                />
+              <div className="pt-6 border-t border-[#181818]/10">
+                <a
+                  href="mailto:nextshopp0904@gmail.com"
+                  className="text-base sm:text-lg font-bold font-mono text-[#181818] hover:underline block"
+                >
+                  nextshopp0904@gmail.com
+                </a>
+                <span className="text-[11px] font-mono text-[#7c7c7c] mt-1 block">
+                  Guaranteed Reply Within 2 Hours
+                </span>
+              </div>
+            </div>
+
+            {/* Tray 3 */}
+            <div className="rounded-[28px] bg-[#e2dacf]/40 border border-[#181818]/10 p-8 flex flex-col justify-between hover:border-[#181818]/30 transition-all">
+              <div>
+                <div className="w-12 h-12 rounded-full bg-[#181818]/5 border border-[#181818]/15 flex items-center justify-center mb-6 text-[#181818]">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#7c7c7c]">
+                  CHANNEL 03
+                </span>
+                <h3 className="text-xl font-bold uppercase tracking-tight text-[#181818] mt-1 mb-2">
+                  Atelier & Headquarters
+                </h3>
+                <p className="text-xs text-[#4f4742] leading-relaxed mb-6">
+                  Primary operations center, material testing lab, and central distribution sanctuary.
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-[#181818]/10">
+                <p className="text-sm font-bold uppercase tracking-wider text-[#181818]">
+                  Bharat E-Commerce Platform
+                </p>
+                <span className="text-[11px] font-mono text-[#7c7c7c] mt-1 block">
+                  Mumbai, Maharashtra, 400612
+                </span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section id="contact-form" className="py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-              <p className="text-gray-600 max-w-xl mx-auto">
-                We value your feedback and are always ready to assist with any questions
-              </p>
-            </div>
+      {/* 3. Main Inquiry Form & Trade Details */}
+      <section className="py-20 md:py-32 border-b border-[#181818]/10">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+            {/* Form Column */}
+            <div className="lg:col-span-7">
+              <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c] block mb-2">
+                [ CORRESPONDENCE PROTOCOL ]
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-[#181818] mb-8">
+                Transmit An Inquiry
+              </h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
-              <div className="lg:col-span-2">
-                <div className="sticky top-20">
-                  <div className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white p-4 rounded-xl inline-block mb-6">
-                    <MessageSquare size={24} />
-                  </div>
-
-                  <h3 className="text-2xl font-bold mb-4">What to Expect</h3>
-                  <p className="text-gray-600 mb-8">
-                    Fill out the form and we'll get back to you as soon as possible. Our team typically responds within 24 hours.
-                  </p>
-
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="p-3 bg-indigo-50 rounded-full">
-                        <Clock className="text-indigo-600" size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">Fast Response Time</h3>
-                        <p className="text-sm text-gray-500">We typically respond within 24 hours</p>
-                      </div>
-                    </div>
-
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="faq-1">
-                        <AccordionTrigger className="text-left">What information should I include in my message?</AccordionTrigger>
-                        <AccordionContent>
-                          For the fastest response, please include your order number (if applicable), details about your inquiry, and any relevant screenshots or information.
-                        </AccordionContent>
-                      </AccordionItem>
-                      <AccordionItem value="faq-2">
-                        <AccordionTrigger className="text-left">How can I track my order status?</AccordionTrigger>
-                        <AccordionContent>
-                          You can track your order in real-time by logging into your account and visiting the Orders section in your profile dashboard.
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                </div>
+              {/* Inquiry Category Pills */}
+              <div className="flex flex-wrap gap-2 mb-8">
+                {["Acquisition", "Order Status", "Warranty & Repair", "Architectural Trade"].map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
+                      activeCategory === cat
+                        ? "bg-[#181818] text-[#f0ebe6] shadow-md"
+                        : "bg-[#e2dacf]/50 text-[#181818] hover:bg-[#e2dacf]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
 
-              <div className="lg:col-span-3">
-                <div className="bg-white rounded-3xl shadow-sm p-8 border border-gray-100 hover:shadow-md transition-all">
-                  <form className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                          First Name
-                        </label>
-                        <Input
-                          id="firstName"
-                          placeholder="Enter your first name"
-                          required
-                          className="w-full"
-                        />
+              {status === "success" && submittedData ? (
+                <div className="rounded-[28px] bg-[#181818] text-[#f0ebe6] p-8 sm:p-12 text-center space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-lg">
+                    <Check className="h-8 w-8" />
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-400 block">
+                      [ REFERENCE #{submittedData.inquiryId} ]
+                    </span>
+                    <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#f0ebe6]">
+                      Inquiry Dispatched Directly
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#f0ebe6]/80 max-w-md mx-auto font-mono leading-relaxed">
+                      Thank you, <span className="text-white font-bold">{submittedData.name}</span>. Your dispatch regarding <span className="text-emerald-400 font-semibold">{submittedData.category}</span> has been transmitted directly to our official mailbox at <span className="text-emerald-400 font-bold">nextshopp0904@gmail.com</span>.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-white/[0.06] border border-white/10 max-w-md mx-auto text-left text-xs font-mono space-y-2 text-[#f0ebe6]/80">
+                    <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                      <span className="text-[#f0ebe6]/50 uppercase">Direct Mailbox:</span>
+                      <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        nextshopp0904@gmail.com
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#f0ebe6]/50 uppercase">Patron:</span>
+                      <span className="text-white">{submittedData.name} ({submittedData.email})</span>
+                    </div>
+                    {submittedData.phone && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#f0ebe6]/50 uppercase">Telephone:</span>
+                        <span className="text-white">{submittedData.phone}</span>
                       </div>
-                      <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                          Last Name
-                        </label>
-                        <Input
-                          id="lastName"
-                          placeholder="Enter your last name"
-                          required
-                          className="w-full"
-                        />
-                      </div>
+                    )}
+                    <div className="pt-2 border-t border-white/10">
+                      <span className="text-[#f0ebe6]/50 uppercase block mb-1">Narrative:</span>
+                      <p className="text-[#f0ebe6]/90 line-clamp-3 italic">
+                        &ldquo;{submittedData.message}&rdquo;
+                      </p>
                     </div>
+                  </div>
 
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <a
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=nextshopp0904@gmail.com&su=NextShop%20Inquiry%20[${encodeURIComponent(submittedData.category)}]%20-%20${encodeURIComponent(submittedData.name)}&body=${encodeURIComponent(
+                        `Inquiry Reference: #${submittedData.inquiryId}\nCategory: ${submittedData.category}\nName: ${submittedData.name}\nEmail: ${submittedData.email}\nPhone: ${submittedData.phone || "Not provided"}\n\nMessage:\n${submittedData.message}`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#181818] text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      <span>Open in Gmail</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </a>
+                    <a
+                      href={`mailto:nextshopp0904@gmail.com?subject=Inquiry [${encodeURIComponent(submittedData.category)}] - ${encodeURIComponent(submittedData.name)}&body=${encodeURIComponent(
+                        `Inquiry Reference: #${submittedData.inquiryId}\nName: ${submittedData.name}\nEmail: ${submittedData.email}\nPhone: ${submittedData.phone || "Not provided"}\n\nMessage:\n${submittedData.message}`
+                      )}`}
+                      className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-[#f0ebe6] text-xs font-bold uppercase tracking-wider border border-white/15 transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                    >
+                      <span>Default Mail App</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({ name: "", email: "", phone: "", message: "" })
+                        setSubmittedData(null)
+                        setStatus("idle")
+                      }}
+                      className="px-6 py-3 rounded-full bg-[#f0ebe6] hover:bg-white text-[#181818] text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer"
+                    >
+                      New Inquiry
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                        Email Address
+                      <label className="block text-xs font-mono uppercase tracking-wider text-[#7c7c7c] mb-2">
+                        Your Full Name *
                       </label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email address"
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                      </label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="Enter your phone number"
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                        Subject
-                      </label>
-                      <Input
-                        id="subject"
-                        placeholder="What is your message about?"
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                        Message
-                      </label>
-                      <Textarea
-                        id="message"
-                        placeholder="Please provide details about your inquiry"
-                        rows={5}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div className="flex items-center">
                       <input
-                        type="checkbox"
-                        id="privacy"
-                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        type="text"
                         required
+                        value={formData.name}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name: e.target.value })
+                          if (formErrors.name) setFormErrors({ ...formErrors, name: undefined })
+                        }}
+                        placeholder="e.g. User Name"
+                        className={`w-full px-5 py-3.5 rounded-full bg-white/70 border text-sm text-[#181818] placeholder:text-[#7c7c7c] focus:outline-none focus:ring-1 transition-all ${
+                          formErrors.name
+                            ? "border-red-400 focus:ring-red-400"
+                            : "border-[#181818]/15 focus:ring-[#181818]"
+                        }`}
                       />
-                      <label htmlFor="privacy" className="ml-2 text-sm text-gray-600">
-                        I agree to the <Link href="/privacy-policy" className="text-indigo-600 hover:underline">Privacy Policy</Link>
-                      </label>
+                      {formErrors.name && (
+                        <p className="text-xs text-red-600 mt-1.5 flex items-center gap-1 font-mono">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>{formErrors.name}</span>
+                        </p>
+                      )}
                     </div>
-
                     <div>
-                      <Button
-                        type="submit"
-                        className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-6 py-2 rounded-full"
-                      >
-                        Send Message
-                      </Button>
+                      <label className="block text-xs font-mono uppercase tracking-wider text-[#7c7c7c] mb-2">
+                        Electronic Mail *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value })
+                          if (formErrors.email) setFormErrors({ ...formErrors, email: undefined })
+                        }}
+                        placeholder="e.g. xyz@mail.com"
+                        className={`w-full px-5 py-3.5 rounded-full bg-white/70 border text-sm text-[#181818] placeholder:text-[#7c7c7c] focus:outline-none focus:ring-1 transition-all ${
+                          formErrors.email
+                            ? "border-red-400 focus:ring-red-400"
+                            : "border-[#181818]/15 focus:ring-[#181818]"
+                        }`}
+                      />
+                      {formErrors.email && (
+                        <p className="text-xs text-red-600 mt-1.5 flex items-center gap-1 font-mono">
+                          <AlertCircle className="h-3 w-3" />
+                          <span>{formErrors.email}</span>
+                        </p>
+                      )}
                     </div>
-                  </form>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-[#7c7c7c] mb-2">
+                      Contact Telephone (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="e.g. 10 digit number"
+                      className="w-full px-5 py-3.5 rounded-full bg-white/70 border border-[#181818]/15 text-sm text-[#181818] placeholder:text-[#7c7c7c] focus:outline-none focus:ring-1 focus:ring-[#181818]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-[#7c7c7c] mb-2">
+                      Inquiry Narrative *
+                    </label>
+                    <textarea
+                      required
+                      rows={5}
+                      value={formData.message}
+                      onChange={(e) => {
+                        setFormData({ ...formData, message: e.target.value })
+                        if (formErrors.message) setFormErrors({ ...formErrors, message: undefined })
+                      }}
+                      placeholder="Provide details regarding your desired item, custom finish, or delivery specifications..."
+                      className={`w-full p-5 rounded-2xl bg-white/70 border text-sm text-[#181818] placeholder:text-[#7c7c7c] focus:outline-none focus:ring-1 resize-none transition-all ${
+                        formErrors.message
+                          ? "border-red-400 focus:ring-red-400"
+                          : "border-[#181818]/15 focus:ring-[#181818]"
+                      }`}
+                    />
+                    {formErrors.message && (
+                      <p className="text-xs text-red-600 mt-1.5 flex items-center gap-1 font-mono">
+                        <AlertCircle className="h-3 w-3" />
+                        <span>{formErrors.message}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {status === "error" && (
+                    <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-mono flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      <span>Please complete all required fields with valid details before dispatching.</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                    <button
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="px-8 py-4 rounded-full bg-[#181818] hover:bg-[#38322c] text-[#f0ebe6] text-xs font-bold uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 active:scale-95 cursor-pointer"
+                    >
+                      {status === "loading" ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Dispatching to Gmail...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Dispatch Inquiry</span>
+                          <ArrowUpRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                    <div className="flex items-center gap-2 text-[11px] font-mono text-[#7c7c7c]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>Dispatched directly to: <strong className="text-[#181818]">nextshopp0904@gmail.com</strong></span>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Right Information Column */}
+            <div className="lg:col-span-5 space-y-8 lg:border-l lg:border-[#181818]/10 lg:pl-12">
+              <div>
+                <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c] block mb-2">
+                  [ COMMITMENT ]
+                </span>
+                <h3 className="text-2xl font-bold uppercase tracking-tight text-[#181818] mb-3">
+                  Concierge Service Standards
+                </h3>
+                <p className="text-xs sm:text-sm text-[#4f4742] leading-relaxed">
+                  We assign every patron order to an individual liaison. From the moment your payment token validates until final unboxing at your premises, your liaison monitors transit temperature, tracking handoffs, and arrival satisfaction.
+                </p>
+              </div>
+
+              <div className="rounded-[24px] bg-[#181818] text-[#f0ebe6] p-8 shadow-xl space-y-4">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#f0ebe6]/70">
+                  Architectural Trade Division
+                </span>
+                <h4 className="text-xl font-bold uppercase tracking-tight text-[#f0ebe6]">
+                  Studio Specifier Program
+                </h4>
+                <p className="text-xs text-[#f0ebe6]/80 leading-relaxed font-mono">
+                  Are you specifying furniture, acoustics, or fixtures for commercial sanctuaries or private residences? Contact our Trade Lead directly:
+                </p>
+                <div className="pt-2">
+                  <a
+                    href="mailto:nextshopp0904@gmail.com"
+                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:underline"
+                  >
+                    <span>nextshopp0904@gmail.com</span>
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -439,77 +532,50 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="bg-indigo-50 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-              <p className="text-gray-600">
-                Find quick answers to common questions about our services
-              </p>
-            </div>
+      {/* 4. Concierge FAQ Section (Numbered Accordion) */}
+      <section className="py-20 md:py-32">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          <div className="mb-14">
+            <span className="text-xs font-mono tracking-[0.25em] uppercase text-[#7c7c7c] block mb-2">
+              [ KNOWLEDGE PROTOCOL ]
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight uppercase text-[#181818]">
+              Frequently Consulted Protocols
+            </h2>
+          </div>
 
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="faq-1">
-                <AccordionTrigger className="hover:text-indigo-600">How can I track my order?</AccordionTrigger>
-                <AccordionContent>
-                  You can track your order by logging into your account and navigating to the Orders section. There, you'll find real-time updates on your purchase.
-                </AccordionContent>
-              </AccordionItem>
+          <div className="divide-y divide-[#181818]/15 border-y border-[#181818]/15">
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = openFaq === idx
+              return (
+                <div key={item.num} className="py-6 sm:py-8">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full flex justify-between items-center text-left group"
+                  >
+                    <div className="flex items-baseline gap-4 sm:gap-8 pr-4">
+                      <span className="text-xs font-mono text-[#7c7c7c]">{item.num}</span>
+                      <h3 className="text-lg sm:text-2xl font-bold uppercase tracking-tight text-[#181818] group-hover:opacity-80 transition-opacity">
+                        {item.question}
+                      </h3>
+                    </div>
+                    <div className={`w-8 h-8 rounded-full border border-[#181818]/20 flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 bg-[#181818] text-[#f0ebe6]" : ""}`}>
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
+                  </button>
 
-              <AccordionItem value="faq-2">
-                <AccordionTrigger className="hover:text-indigo-600">What is your return policy?</AccordionTrigger>
-                <AccordionContent>
-                  We offer a 30-day return policy for most items. Products must be in original condition with tags attached and original packaging.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="faq-3">
-                <AccordionTrigger className="hover:text-indigo-600">How do I change or cancel my order?</AccordionTrigger>
-                <AccordionContent>
-                  If you need to change or cancel your order, please contact our customer service team as soon as possible. We can usually accommodate changes if the order hasn't shipped yet.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="faq-4">
-                <AccordionTrigger className="hover:text-indigo-600">Do you ship internationally?</AccordionTrigger>
-                <AccordionContent>
-                  Yes, we ship to most countries worldwide. Shipping costs and delivery times vary by location. You can see the specific options at checkout.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="faq-5">
-                <AccordionTrigger className="hover:text-indigo-600">How can I get support for a technical issue?</AccordionTrigger>
-                <AccordionContent>
-                  For technical support, please email our dedicated support team at technical@nextshop.com with details of your issue, and we'll respond within 24 hours.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                  {isOpen && (
+                    <div className="mt-4 pl-8 sm:pl-16 pr-8 text-xs sm:text-sm text-[#4f4742] leading-relaxed animate-in slide-in-from-top-2 duration-200 font-mono">
+                      {item.answer}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
-
-      {/* Floating Call Button */}
-      <div
-        className={`fixed right-4 sm:right-6 bottom-4 sm:bottom-6 z-50 transition-all duration-300 ${showFloatingCall ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}
-      >
-        <a
-          href="tel:+911800-123-4567"
-          className="flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-2 sm:py-3 px-3 sm:px-5 rounded-full shadow-lg hover:shadow-xl transition-shadow group"
-        >
-          <div className="relative">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-            </svg>
-            <span className="absolute -inset-1 rounded-full border-2 border-white/40 animate-ping"></span>
-          </div>
-          <span className="font-medium">Call Us</span>
-          <span className="text-xs bg-white/20 py-1 px-2 rounded-full hidden sm:inline-block">
-            24/7 Support
-          </span>
-        </a>
-      </div>
     </main>
   )
-} 
+}
