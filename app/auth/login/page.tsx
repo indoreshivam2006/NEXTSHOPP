@@ -179,7 +179,8 @@ function LoginForm() {
         let errorMessage = "An error occurred during sign-in. Please try again.";
         
         if (error.code === "auth/unauthorized-domain") {
-          errorMessage = "This website is not authorized for Google sign-in.";
+          const currentHost = typeof window !== "undefined" ? window.location.hostname : "nextshopp-azure.vercel.app";
+          errorMessage = `Domain not authorized. Please add "${currentHost}" under Authorized Domains in Firebase Console.`;
         } else if (error.code === "auth/popup-blocked") {
           errorMessage = "Pop-up was blocked by your browser. Please allow pop-ups for this site.";
         } else if (error.code === "auth/cancelled-popup-request") {
