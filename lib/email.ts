@@ -8,6 +8,7 @@ export interface ContactEmailPayload {
   category: string
   message: string
   timestamp?: string
+  origin?: string
 }
 
 /**
@@ -111,12 +112,18 @@ export async function sendInquiryToGmail(payload: ContactEmailPayload): Promise<
 
   // 2. Automatic forwarding relay directly to nextshopp0904@gmail.com
   try {
+    const siteUrl =
+      payload.origin ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "https://nextshopp-azure.vercel.app")
+
     const relayRes = await fetch(`https://formsubmit.co/ajax/${recipient}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Referer": "http://localhost:3000",
+        "Origin": siteUrl,
+        "Referer": `${siteUrl}/contact`,
       },
       body: JSON.stringify({
         _subject: `[NextShop Inquiry #${payload.inquiryId}] ${payload.category} from ${payload.name}`,

@@ -47,6 +47,15 @@ export async function POST(req: Request) {
       inquiryId = "INQ-" + Math.random().toString(36).substring(2, 8).toUpperCase()
     }
 
+    // Extract incoming request origin for FormSubmit domain mapping
+    const rawOrigin = req.headers.get("origin") || req.headers.get("referer") || undefined
+    let requestOrigin: string | undefined
+    if (rawOrigin) {
+      try {
+        requestOrigin = new URL(rawOrigin).origin
+      } catch {}
+    }
+
     // Transmit email directly to nextshopp0904@gmail.com
     const emailResult = await sendInquiryToGmail({
       inquiryId,
@@ -55,6 +64,7 @@ export async function POST(req: Request) {
       phone: validatedData.phone,
       category: validatedData.category,
       message: validatedData.message,
+      origin: requestOrigin,
     })
 
     console.log(

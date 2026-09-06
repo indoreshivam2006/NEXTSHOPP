@@ -105,6 +105,29 @@ export default function ContactPage() {
       })
       setStatus("success")
 
+      // Direct client-side browser relay to FormSubmit for immediate domain origin match
+      try {
+        fetch("https://formsubmit.co/ajax/nextshopp0904@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            _subject: `[NextShop Inquiry #${inqId}] ${activeCategory} from ${formData.name}`,
+            _replyto: formData.email,
+            _template: "table",
+            "Inquiry Reference": `#${inqId}`,
+            "Category": activeCategory,
+            "Customer Name": formData.name,
+            "Customer Email": formData.email,
+            "Telephone": formData.phone || "Not provided",
+            "Inquiry Narrative": formData.message,
+            "Submitted From": typeof window !== "undefined" ? window.location.href : "https://nextshopp-azure.vercel.app",
+          }),
+        }).catch(() => {})
+      } catch {}
+
       toast({
         title: "Inquiry Sent Directly to Gmail",
         description: `Reference #${inqId}. Dispatched directly to nextshopp0904@gmail.com.`,
